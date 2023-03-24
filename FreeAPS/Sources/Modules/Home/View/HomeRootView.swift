@@ -53,6 +53,13 @@ extension Home {
             return formatter
         }
 
+        private var eventualBGFormatter: NumberFormatter {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.maximumFractionDigits = 1
+            return formatter
+        }
+
         private var targetFormatter: NumberFormatter {
             let formatter = NumberFormatter()
             formatter.numberStyle = .decimal
@@ -330,11 +337,11 @@ extension Home {
         var legendPanel: some View {
             ZStack {
                 HStack(alignment: .center) {
-/*                    Group {
-                        Circle().fill(Color.loopGreen).frame(width: 8, height: 8)
-                        Text("BG")
-                            .font(.system(size: 12, weight: .bold)).foregroundColor(.loopGreen)
-                    }*/ // hide BG from legend
+                    /*                    Group {
+                         Circle().fill(Color.loopGreen).frame(width: 8, height: 8)
+                         Text("BG")
+                             .font(.system(size: 12, weight: .bold)).foregroundColor(.loopGreen)
+                     }*/ // hide BG from legend
                     Group {
                         Circle().fill(Color.insulin).frame(width: 8, height: 8)
                             .padding(.leading, 8)
@@ -362,7 +369,7 @@ extension Home {
 
                     if let eventualBG = state.eventualBG {
                         Text(
-                            "⇢ " + numberFormatter.string(
+                            "⇢ " + eventualBGFormatter.string(
                                 from: (state.units == .mmolL ? eventualBG.asMmolL : Decimal(eventualBG)) as NSNumber
                             )!
                         )
