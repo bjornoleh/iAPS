@@ -140,7 +140,7 @@ extension Home {
                 if state.alarm == nil {
                     state.openCGM()
                 } else {
-                    state.showModal(for: .snooze)
+                    state.openCGM()
                 }
             }
             .onLongPressGesture {
@@ -149,7 +149,7 @@ extension Home {
                 if state.alarm == nil {
                     state.showModal(for: .snooze)
                 } else {
-                    state.openCGM()
+                    state.showModal(for: .snooze)
                 }
             }
         }
