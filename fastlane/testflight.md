@@ -71,7 +71,7 @@ If you have previously built Loop or another app using the "browser build" metho
 ## Create App Group
 
 If you have already built iAPS via Xcode using this Apple ID, you can skip on to [Create iAPS App in App Store Connect](#create-FreeAPS-X-app-in-app-store-connect).
-_Please note that in default builds of iAPS, the app group is actually identical to the one used with Loop, so please enter these details exactly as described below. This is to ease the setup of apps such as Xdrip4iOS. It may require some caution if transfering between iAPS and Loop._
+_Please note that in default builds of iAPS, the app group is actually identical to the one used with Loop, so please enter these details exactly as described below. This is to ease the setup of apps such as Xdrip4iOS. It may require some caution if transfering between FreAPS X and Loop._
 
 1. Go to [Register an App Group](https://developer.apple.com/account/resources/identifiers/applicationGroup/add/) on the apple developer site.
 1. For Description, use "Loop App Group".
@@ -92,6 +92,8 @@ _Please note that in default builds of iAPS, the app group is actually identical
 1. Click "Save".
 1. Click "Confirm".
 1. Remember to do this for each of the identifiers above.
+
+## Create iAPS App in App Store Connect
 
 ## Create iAPS App in App Store Connect
 
