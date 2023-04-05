@@ -52,30 +52,29 @@ extension AddCarbs {
                     }.padding(.vertical)
 
                     if state.useFPUconversion {
-                        proteinAndFat()
-                    }
-                    HStack {
-                        Text("Note").foregroundColor(.secondary)
-                        TextField("", text: $state.note).multilineTextAlignment(.trailing)
-                        if state.note != "", isFocused {
-                            Button { isFocused = false } label: { Image(systemName: "keyboard.chevron.compact.down") }
-                                .controlSize(.mini)
-                        }
-                    }.focused($isFocused)
-                    HStack {
-                        Button {
-                            state.useFPUconversion.toggle()
-                        }
-                        label: {
-                            Text(
-                                state
-                                    .useFPUconversion ? NSLocalizedString("Hide Fat & Protein", comment: "") :
-                                    NSLocalizedString("Fat & Protein", comment: "")
-                            ) }
+                            proteinAndFat()
+                            HStack {
+                                Button {
+                                    isPromtPresented = true
+                                }
+                                label: { Text("Save as Preset") }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .trailing)
                             .controlSize(.mini)
                             .buttonStyle(BorderlessButtonStyle())
-                        Button {
-                            isPromtPresented = true
+
+                            .disabled(
+                                (state.carbs <= 0 && state.fat <= 0 && state.protein <= 0) ||
+                                    (
+                                        (((state.selection?.carbs ?? 0) as NSDecimalNumber) as Decimal) == state
+                                            .carbs && (((state.selection?.fat ?? 0) as NSDecimalNumber) as Decimal) == state
+                                            .fat && (((state.selection?.protein ?? 0) as NSDecimalNumber) as Decimal) == state
+                                            .protein
+                                    )
+                            )
+                            .popover(isPresented: $isPromtPresented) {
+                                presetPopover
+                            }
                         }
                         label: { Text("Save as Preset") }
                             .frame(maxWidth: .infinity, alignment: .trailing)
