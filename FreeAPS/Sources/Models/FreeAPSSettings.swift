@@ -9,9 +9,10 @@ struct FreeAPSSettings: JSON, Equatable {
     var useLocalGlucoseSource: Bool = false
     var localGlucosePort: Int = 8080
     var debugOptions: Bool = false
-    var insulinReqFraction: Decimal = 0.7
+    var insulinReqPercentage: Decimal = 70
     var skipBolusScreenAfterCarbs: Bool = false
     var displayHR: Bool = false
+    var displayOnWatch: AwConfig = .BGTarget
     var cgm: CGMType = .nightscout
     var uploadGlucose: Bool = false
     var useCalendar: Bool = false
@@ -25,7 +26,7 @@ struct FreeAPSSettings: JSON, Equatable {
     var carbsRequiredThreshold: Decimal = 10
     var animatedBackground: Bool = false
     var displayStatistics: Bool = false
-    var useFPUconversion: Bool = false
+    var useFPUconversion: Bool = true
     var individualAdjustmentFactor: Decimal = 0.5
     var timeCap: Int = 8
     var minuteInterval: Int = 30
@@ -71,8 +72,8 @@ extension FreeAPSSettings: Decodable {
             settings.debugOptions = debugOptions
         }
 
-        if let insulinReqFraction = try? container.decode(Decimal.self, forKey: .insulinReqFraction) {
-            settings.insulinReqFraction = insulinReqFraction
+        if let insulinReqPercentage = try? container.decode(Decimal.self, forKey: .insulinReqPercentage) {
+            settings.insulinReqPercentage = insulinReqPercentage
         }
 
         if let skipBolusScreenAfterCarbs = try? container.decode(Bool.self, forKey: .skipBolusScreenAfterCarbs) {
@@ -81,6 +82,12 @@ extension FreeAPSSettings: Decodable {
 
         if let displayHR = try? container.decode(Bool.self, forKey: .displayHR) {
             settings.displayHR = displayHR
+            // compatibility if displayOnWatch is not available in json files
+            settings.displayOnWatch = (displayHR == true) ? AwConfig.HR : AwConfig.BGTarget
+        }
+
+        if let displayOnWatch = try? container.decode(AwConfig.self, forKey: .displayOnWatch) {
+            settings.displayOnWatch = displayOnWatch
         }
 
         if let cgm = try? container.decode(CGMType.self, forKey: .cgm) {

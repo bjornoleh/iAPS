@@ -16,6 +16,9 @@
 		19012CDC291D2CB900FB8210 /* LoopStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19012CDB291D2CB900FB8210 /* LoopStats.swift */; };
 		1927C8E62744606D00347C69 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1927C8E82744606D00347C69 /* InfoPlist.strings */; };
 		1935364028496F7D001E0B16 /* Oref2_variables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1935363F28496F7D001E0B16 /* Oref2_variables.swift */; };
+		1967DFBE29D052C200759F30 /* Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1967DFBD29D052C200759F30 /* Icons.swift */; };
+		1967DFC029D053AC00759F30 /* IconSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1967DFBF29D053AC00759F30 /* IconSelection.swift */; };
+		1967DFC229D053D300759F30 /* IconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1967DFC129D053D300759F30 /* IconImage.swift */; };
 		19795118275953E50044850D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 198377D4266BFFF6004DE65E /* Localizable.strings */; };
 		198377D2266BFFF6004DE65E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 198377D4266BFFF6004DE65E /* Localizable.strings */; };
 		19854F492961C3E500941627 /* DurationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19854F482961C3E500941627 /* DurationButton.swift */; };
@@ -32,6 +35,10 @@
 		19DC678129CA676A00FD9EC4 /* OverrideProfilesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DC678029CA676A00FD9EC4 /* OverrideProfilesProvider.swift */; };
 		19DC678329CA677D00FD9EC4 /* OverrideProfilesStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DC678229CA677D00FD9EC4 /* OverrideProfilesStateModel.swift */; };
 		19DC678529CA67A400FD9EC4 /* OverrideProfilesRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DC678429CA67A400FD9EC4 /* OverrideProfilesRootView.swift */; };
+		19E1F7E829D082D0005C8D20 /* IconConfigDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E1F7E729D082D0005C8D20 /* IconConfigDataFlow.swift */; };
+		19E1F7EA29D082ED005C8D20 /* IconConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E1F7E929D082ED005C8D20 /* IconConfigProvider.swift */; };
+		19E1F7EC29D082FE005C8D20 /* IconConfigStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E1F7EB29D082FE005C8D20 /* IconConfigStateModel.swift */; };
+		19E1F7EF29D08EBA005C8D20 /* IconConfigRootWiew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19E1F7EE29D08EBA005C8D20 /* IconConfigRootWiew.swift */; };
 		1BBB001DAD60F3B8CEA4B1C7 /* ISFEditorStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505E09DC17A0C3D0AF4B66FE /* ISFEditorStateModel.swift */; };
 		1D845DF2E3324130E1D95E67 /* DataTableProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60744C3E9BB3652895C908CC /* DataTableProvider.swift */; };
 		23888883D4EA091C88480FF2 /* BolusProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19984D62EFC0035A9E9644D /* BolusProvider.swift */; };
@@ -88,14 +95,6 @@
 		3818AA5D274C26A300843DB3 /* MockKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA4E274C26A300843DB3 /* MockKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3818AA5E274C26A300843DB3 /* MockKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA4F274C26A300843DB3 /* MockKitUI.framework */; };
 		3818AA5F274C26A300843DB3 /* MockKitUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA4F274C26A300843DB3 /* MockKitUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3818AA62274C26A400843DB3 /* MinimedKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA51274C26A300843DB3 /* MinimedKit.framework */; };
-		3818AA63274C26A400843DB3 /* MinimedKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA51274C26A300843DB3 /* MinimedKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3818AA64274C26A400843DB3 /* MinimedKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA52274C26A300843DB3 /* MinimedKitUI.framework */; };
-		3818AA65274C26A400843DB3 /* MinimedKitUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA52274C26A300843DB3 /* MinimedKitUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3818AA66274C26A400843DB3 /* OmniKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA53274C26A300843DB3 /* OmniKit.framework */; };
-		3818AA67274C26A400843DB3 /* OmniKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA53274C26A300843DB3 /* OmniKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3818AA68274C26A400843DB3 /* OmniKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA54274C26A300843DB3 /* OmniKitUI.framework */; };
-		3818AA69274C26A400843DB3 /* OmniKitUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA54274C26A300843DB3 /* OmniKitUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3818AA6A274C26A500843DB3 /* RileyLinkBLEKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA55274C26A300843DB3 /* RileyLinkBLEKit.framework */; };
 		3818AA6B274C26A500843DB3 /* RileyLinkBLEKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA55274C26A300843DB3 /* RileyLinkBLEKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3818AA6C274C26A500843DB3 /* RileyLinkKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3818AA56274C26A300843DB3 /* RileyLinkKit.framework */; };
@@ -199,7 +198,6 @@
 		38E87401274F77E400975559 /* CoreNFC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38E873FD274F761800975559 /* CoreNFC.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		38E87403274F78C000975559 /* libswiftCoreNFC.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 38E87402274F78C000975559 /* libswiftCoreNFC.tbd */; settings = {ATTRIBUTES = (Weak, ); }; };
 		38E87408274F9AD000975559 /* UserNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E87407274F9AD000975559 /* UserNotificationsManager.swift */; };
-		38E8751F27554D5700975559 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 38E8751E27554D5700975559 /* Assets.xcassets */; };
 		38E8752527554D5700975559 /* FreeAPSWatch WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 38E8752427554D5700975559 /* FreeAPSWatch WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		38E8752A27554D5700975559 /* FreeAPSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E8752927554D5700975559 /* FreeAPSApp.swift */; };
 		38E8752C27554D5700975559 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E8752B27554D5700975559 /* MainView.swift */; };
@@ -312,6 +310,13 @@
 		CE79502F29980E5800FA576E /* ShareClientUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE79502D29980E4D00FA576E /* ShareClientUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CE82E02528E867BA00473A9C /* AlertStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE82E02428E867BA00473A9C /* AlertStorage.swift */; };
 		CE82E02728E869DF00473A9C /* AlertEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE82E02628E869DF00473A9C /* AlertEntry.swift */; };
+		CE94597A29E9DF7B0047C9C6 /* ConnectIQ.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE94597929E9DF7B0047C9C6 /* ConnectIQ.framework */; };
+		CE94597B29E9DFA90047C9C6 /* ConnectIQ.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CE94597929E9DF7B0047C9C6 /* ConnectIQ.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CE94597E29E9E1EE0047C9C6 /* GarminManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94597D29E9E1EE0047C9C6 /* GarminManager.swift */; };
+		CE94598029E9E3BD0047C9C6 /* WatchConfigDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94597F29E9E3BD0047C9C6 /* WatchConfigDataFlow.swift */; };
+		CE94598229E9E3D30047C9C6 /* WatchConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94598129E9E3D30047C9C6 /* WatchConfigProvider.swift */; };
+		CE94598429E9E3E60047C9C6 /* WatchConfigStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94598329E9E3E60047C9C6 /* WatchConfigStateModel.swift */; };
+		CE94598729E9E4110047C9C6 /* WatchConfigRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE94598629E9E4110047C9C6 /* WatchConfigRootView.swift */; };
 		CEA4F62329BE10F70011ADF7 /* SavitzkyGolayFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA4F62229BE10F70011ADF7 /* SavitzkyGolayFilter.swift */; };
 		CEB434DC28B8F5B900B70274 /* MKRingProgressView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEB434DB28B8F5B900B70274 /* MKRingProgressView.framework */; };
 		CEB434DD28B8F5B900B70274 /* MKRingProgressView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CEB434DB28B8F5B900B70274 /* MKRingProgressView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -322,6 +327,14 @@
 		CEB434E728B9053300B70274 /* LoopUIColorPalette+Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB434E628B9053300B70274 /* LoopUIColorPalette+Default.swift */; };
 		CEB434FD28B90B7C00B70274 /* SwiftCharts in Frameworks */ = {isa = PBXBuildFile; productRef = CEB434FC28B90B7C00B70274 /* SwiftCharts */; };
 		CEB434FE28B90B8C00B70274 /* SwiftCharts in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CEB434FC28B90B7C00B70274 /* SwiftCharts */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		CEC751D229D88257006E9D24 /* OmniKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC751D129D88257006E9D24 /* OmniKit.framework */; };
+		CEC751D429D88257006E9D24 /* OmniKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC751D329D88257006E9D24 /* OmniKitUI.framework */; };
+		CEC751D629D88262006E9D24 /* MinimedKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC751D529D88262006E9D24 /* MinimedKit.framework */; };
+		CEC751D829D88262006E9D24 /* MinimedKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC751D729D88262006E9D24 /* MinimedKitUI.framework */; };
+		CEC751D929D8827A006E9D24 /* OmniKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CEC751D129D88257006E9D24 /* OmniKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEC751DA29D8827A006E9D24 /* OmniKitUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CEC751D329D88257006E9D24 /* OmniKitUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEC751DB29D88280006E9D24 /* MinimedKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CEC751D529D88262006E9D24 /* MinimedKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CEC751DC29D88280006E9D24 /* MinimedKitUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = CEC751D729D88262006E9D24 /* MinimedKitUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		CECA4775298DA8310095139F /* DexcomSourceG5.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECA4774298DA8310095139F /* DexcomSourceG5.swift */; };
 		D2165E9D78EFF692C1DED1C6 /* AddTempTargetDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8A42073A2D03A278914448 /* AddTempTargetDataFlow.swift */; };
 		D6D02515BBFBE64FEBE89856 /* DataTableRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881E04BA5E0A003DE8E0A9C6 /* DataTableRootView.swift */; };
@@ -395,6 +408,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				CE94597B29E9DFA90047C9C6 /* ConnectIQ.framework in Embed Frameworks */,
+				CEC751DB29D88280006E9D24 /* MinimedKit.framework in Embed Frameworks */,
+				CEC751DC29D88280006E9D24 /* MinimedKitUI.framework in Embed Frameworks */,
+				CEC751D929D8827A006E9D24 /* OmniKit.framework in Embed Frameworks */,
+				CEC751DA29D8827A006E9D24 /* OmniKitUI.framework in Embed Frameworks */,
 				CE79502F29980E5800FA576E /* ShareClientUI.framework in Embed Frameworks */,
 				CE79502C29980CB500FA576E /* G7SensorKitUI.framework in Embed Frameworks */,
 				CE79502B29980CAF00FA576E /* CGMBLEKitUI.framework in Embed Frameworks */,
@@ -402,16 +420,12 @@
 				CE398D19297C9EFD00DF218F /* G7SensorKit.framework in Embed Frameworks */,
 				3818AA6F274C26A500843DB3 /* RileyLinkKitUI.framework in Embed Frameworks */,
 				3818AA4B274C267100843DB3 /* CGMBLEKit.framework in Embed Frameworks */,
-				3818AA67274C26A400843DB3 /* OmniKit.framework in Embed Frameworks */,
 				CEB434E028B8F5C400B70274 /* OmniBLE.framework in Embed Frameworks */,
-				3818AA63274C26A400843DB3 /* MinimedKit.framework in Embed Frameworks */,
 				CEB434DD28B8F5B900B70274 /* MKRingProgressView.framework in Embed Frameworks */,
 				CEB434FE28B90B8C00B70274 /* SwiftCharts in Embed Frameworks */,
 				3818AA6B274C26A500843DB3 /* RileyLinkBLEKit.framework in Embed Frameworks */,
 				3818AA59274C26A300843DB3 /* LoopKit.framework in Embed Frameworks */,
-				3818AA65274C26A400843DB3 /* MinimedKitUI.framework in Embed Frameworks */,
 				3818AA5B274C26A300843DB3 /* LoopKitUI.framework in Embed Frameworks */,
-				3818AA69274C26A400843DB3 /* OmniKitUI.framework in Embed Frameworks */,
 				3818AA72274C278200843DB3 /* LoopTestingKit.framework in Embed Frameworks */,
 				3818AA6D274C26A500843DB3 /* RileyLinkKit.framework in Embed Frameworks */,
 				3818AA5D274C26A300843DB3 /* MockKit.framework in Embed Frameworks */,
@@ -472,6 +486,9 @@
 		1927C8FB2744612600347C69 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1927C8FE274489BA00347C69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = Base; path = Base.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1935363F28496F7D001E0B16 /* Oref2_variables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Oref2_variables.swift; sourceTree = "<group>"; };
+		1967DFBD29D052C200759F30 /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
+		1967DFBF29D053AC00759F30 /* IconSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconSelection.swift; sourceTree = "<group>"; };
+		1967DFC129D053D300759F30 /* IconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImage.swift; sourceTree = "<group>"; };
 		1980131D29CC9839002FF024 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		198377D3266BFFF6004DE65E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		198377D5266C0A05004DE65E /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -506,6 +523,10 @@
 		19DC678029CA676A00FD9EC4 /* OverrideProfilesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideProfilesProvider.swift; sourceTree = "<group>"; };
 		19DC678229CA677D00FD9EC4 /* OverrideProfilesStateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideProfilesStateModel.swift; sourceTree = "<group>"; };
 		19DC678429CA67A400FD9EC4 /* OverrideProfilesRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideProfilesRootView.swift; sourceTree = "<group>"; };
+		19E1F7E729D082D0005C8D20 /* IconConfigDataFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconConfigDataFlow.swift; sourceTree = "<group>"; };
+		19E1F7E929D082ED005C8D20 /* IconConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconConfigProvider.swift; sourceTree = "<group>"; };
+		19E1F7EB29D082FE005C8D20 /* IconConfigStateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconConfigStateModel.swift; sourceTree = "<group>"; };
+		19E1F7EE29D08EBA005C8D20 /* IconConfigRootWiew.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconConfigRootWiew.swift; sourceTree = "<group>"; };
 		1CAE81192B118804DCD23034 /* SnoozeProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SnoozeProvider.swift; sourceTree = "<group>"; };
 		212E8BFE6D66EE65AA26A114 /* CalibrationsProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalibrationsProvider.swift; sourceTree = "<group>"; };
 		223EC0494F55A91E3EA69EF4 /* BolusStateModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BolusStateModel.swift; sourceTree = "<group>"; };
@@ -776,12 +797,22 @@
 		CE79502D29980E4D00FA576E /* ShareClientUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ShareClientUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE82E02428E867BA00473A9C /* AlertStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertStorage.swift; sourceTree = "<group>"; };
 		CE82E02628E869DF00473A9C /* AlertEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertEntry.swift; sourceTree = "<group>"; };
+		CE94597929E9DF7B0047C9C6 /* ConnectIQ.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ConnectIQ.framework; path = "Dependencies/ios-armv7_arm64/ConnectIQ.framework"; sourceTree = "<group>"; };
+		CE94597D29E9E1EE0047C9C6 /* GarminManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminManager.swift; sourceTree = "<group>"; };
+		CE94597F29E9E3BD0047C9C6 /* WatchConfigDataFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConfigDataFlow.swift; sourceTree = "<group>"; };
+		CE94598129E9E3D30047C9C6 /* WatchConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConfigProvider.swift; sourceTree = "<group>"; };
+		CE94598329E9E3E60047C9C6 /* WatchConfigStateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConfigStateModel.swift; sourceTree = "<group>"; };
+		CE94598629E9E4110047C9C6 /* WatchConfigRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConfigRootView.swift; sourceTree = "<group>"; };
 		CEA4F62229BE10F70011ADF7 /* SavitzkyGolayFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavitzkyGolayFilter.swift; sourceTree = "<group>"; };
 		CEB434DB28B8F5B900B70274 /* MKRingProgressView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MKRingProgressView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEB434DE28B8F5C400B70274 /* OmniBLE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = OmniBLE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEB434E228B8F9DB00B70274 /* BluetoothStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothStateManager.swift; sourceTree = "<group>"; };
 		CEB434E428B8FF5D00B70274 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		CEB434E628B9053300B70274 /* LoopUIColorPalette+Default.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoopUIColorPalette+Default.swift"; sourceTree = "<group>"; };
+		CEC751D129D88257006E9D24 /* OmniKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = OmniKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEC751D329D88257006E9D24 /* OmniKitUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = OmniKitUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEC751D529D88262006E9D24 /* MinimedKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MinimedKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEC751D729D88262006E9D24 /* MinimedKitUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MinimedKitUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CECA4774298DA8310095139F /* DexcomSourceG5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DexcomSourceG5.swift; sourceTree = "<group>"; };
 		CFCFE0781F9074C2917890E8 /* ManualTempBasalStateModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ManualTempBasalStateModel.swift; sourceTree = "<group>"; };
 		D0BDC6993C1087310EDFC428 /* CREditorRootView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CREditorRootView.swift; sourceTree = "<group>"; };
@@ -825,6 +856,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE94597A29E9DF7B0047C9C6 /* ConnectIQ.framework in Frameworks */,
+				CEC751D829D88262006E9D24 /* MinimedKitUI.framework in Frameworks */,
+				CEC751D629D88262006E9D24 /* MinimedKit.framework in Frameworks */,
+				CEC751D429D88257006E9D24 /* OmniKitUI.framework in Frameworks */,
+				CEC751D229D88257006E9D24 /* OmniKit.framework in Frameworks */,
 				CE79502E29980E4D00FA576E /* ShareClientUI.framework in Frameworks */,
 				CE79502A29980C9F00FA576E /* G7SensorKitUI.framework in Frameworks */,
 				CE79502829980C9600FA576E /* CGMBLEKitUI.framework in Frameworks */,
@@ -838,10 +874,7 @@
 				3811DE1025C9D37700A708ED /* Swinject in Frameworks */,
 				3818AA5C274C26A300843DB3 /* MockKit.framework in Frameworks */,
 				3818AA6A274C26A500843DB3 /* RileyLinkBLEKit.framework in Frameworks */,
-				3818AA64274C26A400843DB3 /* MinimedKitUI.framework in Frameworks */,
-				3818AA66274C26A400843DB3 /* OmniKit.framework in Frameworks */,
 				3818AA6C274C26A500843DB3 /* RileyLinkKit.framework in Frameworks */,
-				3818AA68274C26A400843DB3 /* OmniKitUI.framework in Frameworks */,
 				3818AA5E274C26A300843DB3 /* MockKitUI.framework in Frameworks */,
 				CE398D18297C9EE800DF218F /* G7SensorKit.framework in Frameworks */,
 				3818AA5A274C26A300843DB3 /* LoopKitUI.framework in Frameworks */,
@@ -852,7 +885,6 @@
 				CEB434FD28B90B7C00B70274 /* SwiftCharts in Frameworks */,
 				38DF1789276FC8C400B3528F /* SwiftMessages in Frameworks */,
 				E0CC2C5C275B9F0F00A7BC71 /* HealthKit.framework in Frameworks */,
-				3818AA62274C26A400843DB3 /* MinimedKit.framework in Frameworks */,
 				3818AA6E274C26A500843DB3 /* RileyLinkKitUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -984,6 +1016,27 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		19E1F7E629D0828B005C8D20 /* IconConfig */ = {
+			isa = PBXGroup;
+			children = (
+				19E1F7E729D082D0005C8D20 /* IconConfigDataFlow.swift */,
+				19E1F7E929D082ED005C8D20 /* IconConfigProvider.swift */,
+				19E1F7EB29D082FE005C8D20 /* IconConfigStateModel.swift */,
+				19E1F7ED29D088C0005C8D20 /* View */,
+			);
+			path = IconConfig;
+			sourceTree = "<group>";
+		};
+		19E1F7ED29D088C0005C8D20 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				19E1F7EE29D08EBA005C8D20 /* IconConfigRootWiew.swift */,
+				1967DFC129D053D300759F30 /* IconImage.swift */,
+				1967DFBF29D053AC00759F30 /* IconSelection.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		29B478DF61BF8D270F7D8954 /* Snooze */ = {
 			isa = PBXGroup;
 			children = (
@@ -1006,6 +1059,8 @@
 		3811DE0325C9D31700A708ED /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				CE94597C29E9E1CD0047C9C6 /* WatchConfig */,
+				19E1F7E629D0828B005C8D20 /* IconConfig */,
 				19D466A129AA2B0A004D5F33 /* FPUConfig */,
 				F90692CD274B99850037068D /* HealthKit */,
 				6DC5D590658EF8B8DF94F9F5 /* AddCarbs */,
@@ -1274,6 +1329,11 @@
 		3818AA48274C267000843DB3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CE94597929E9DF7B0047C9C6 /* ConnectIQ.framework */,
+				CEC751D529D88262006E9D24 /* MinimedKit.framework */,
+				CEC751D729D88262006E9D24 /* MinimedKitUI.framework */,
+				CEC751D129D88257006E9D24 /* OmniKit.framework */,
+				CEC751D329D88257006E9D24 /* OmniKitUI.framework */,
 				CE79502D29980E4D00FA576E /* ShareClientUI.framework */,
 				CE79502929980C9F00FA576E /* G7SensorKitUI.framework */,
 				CE79502729980C9600FA576E /* CGMBLEKitUI.framework */,
@@ -1451,6 +1511,7 @@
 				19012CDB291D2CB900FB8210 /* LoopStats.swift */,
 				FE41E4D329463C660047FD55 /* NightscoutStatistics.swift */,
 				FE41E4D529463EE20047FD55 /* NightscoutPreferences.swift */,
+				1967DFBD29D052C200759F30 /* Icons.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1629,6 +1690,7 @@
 			isa = PBXGroup;
 			children = (
 				38E8754E275556FA00975559 /* WatchManager.swift */,
+				CE94597D29E9E1EE0047C9C6 /* GarminManager.swift */,
 			);
 			path = WatchManager;
 			sourceTree = "<group>";
@@ -1897,6 +1959,25 @@
 				B9488883C59C31550E0B4CEC /* View */,
 			);
 			path = Bolus;
+			sourceTree = "<group>";
+		};
+		CE94597C29E9E1CD0047C9C6 /* WatchConfig */ = {
+			isa = PBXGroup;
+			children = (
+				CE94598529E9E3FE0047C9C6 /* View */,
+				CE94597F29E9E3BD0047C9C6 /* WatchConfigDataFlow.swift */,
+				CE94598129E9E3D30047C9C6 /* WatchConfigProvider.swift */,
+				CE94598329E9E3E60047C9C6 /* WatchConfigStateModel.swift */,
+			);
+			path = WatchConfig;
+			sourceTree = "<group>";
+		};
+		CE94598529E9E3FE0047C9C6 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CE94598629E9E4110047C9C6 /* WatchConfigRootView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		CEB434E128B8F9BC00B70274 /* Bluetooth */ = {
@@ -2220,7 +2301,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				19DA48E929CD339C00EEA1E7 /* Assets.xcassets in Resources */,
-				38E8751F27554D5700975559 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2307,6 +2387,8 @@
 				CEA4F62329BE10F70011ADF7 /* SavitzkyGolayFilter.swift in Sources */,
 				38B4F3C325E2A20B00E76A18 /* PumpSetupView.swift in Sources */,
 				38E4453C274E411700EC9A94 /* Disk+Codable.swift in Sources */,
+				19E1F7EF29D08EBA005C8D20 /* IconConfigRootWiew.swift in Sources */,
+				1967DFC229D053D300759F30 /* IconImage.swift in Sources */,
 				382C134B25F14E3700715CE1 /* BGTargets.swift in Sources */,
 				38AEE75725F0F18E0013F05B /* CarbsStorage.swift in Sources */,
 				38B4F3CA25E502E200E76A18 /* SwiftNotificationCenter.swift in Sources */,
@@ -2315,6 +2397,7 @@
 				3894873A2614928B004DF424 /* DispatchTimer.swift in Sources */,
 				3895E4C625B9E00D00214B37 /* Preferences.swift in Sources */,
 				386A124F271707F000DDC61C /* DexcomSourceG6.swift in Sources */,
+				CE94598429E9E3E60047C9C6 /* WatchConfigStateModel.swift in Sources */,
 				38DF1786276A73D400B3528F /* TagCloudView.swift in Sources */,
 				38B4F3CD25E5031100E76A18 /* Broadcaster.swift in Sources */,
 				383420D925FFEB3F002D46C1 /* Popup.swift in Sources */,
@@ -2327,9 +2410,11 @@
 				38A0364225ED069400FCBB52 /* TempBasal.swift in Sources */,
 				3811DE1725C9D40400A708ED /* Screen.swift in Sources */,
 				383948DA25CD64D500E91849 /* Glucose.swift in Sources */,
+				CE94598029E9E3BD0047C9C6 /* WatchConfigDataFlow.swift in Sources */,
 				388E596C25AD95110019842D /* OpenAPS.swift in Sources */,
 				E00EEC0527368630002FF094 /* StorageAssembly.swift in Sources */,
 				384E803825C388640086DB71 /* Script.swift in Sources */,
+				CE94597E29E9E1EE0047C9C6 /* GarminManager.swift in Sources */,
 				3883583425EEB38000E024B2 /* PumpSettings.swift in Sources */,
 				38DAB280260CBB7F00F74C1A /* PumpView.swift in Sources */,
 				3811DEB125C9D88300A708ED /* Keychain.swift in Sources */,
@@ -2345,6 +2430,7 @@
 				CEB434E328B8F9DB00B70274 /* BluetoothStateManager.swift in Sources */,
 				3811DE4225C9D4A100A708ED /* SettingsDataFlow.swift in Sources */,
 				3811DE2525C9D48300A708ED /* MainRootView.swift in Sources */,
+				CE94598229E9E3D30047C9C6 /* WatchConfigProvider.swift in Sources */,
 				38E44535274E411700EC9A94 /* Disk+Data.swift in Sources */,
 				3811DE3125C9D49500A708ED /* HomeProvider.swift in Sources */,
 				FE41E4D629463EE20047FD55 /* NightscoutPreferences.swift in Sources */,
@@ -2492,11 +2578,13 @@
 				E13B7DAB2A435F57066AF02E /* TargetsEditorStateModel.swift in Sources */,
 				19DC678129CA676A00FD9EC4 /* OverrideProfilesProvider.swift in Sources */,
 				9702FF92A09C53942F20D7EA /* TargetsEditorRootView.swift in Sources */,
+				1967DFBE29D052C200759F30 /* Icons.swift in Sources */,
 				38E8754F275556FA00975559 /* WatchManager.swift in Sources */,
 				A228DF96647338139F152B15 /* PreferencesEditorDataFlow.swift in Sources */,
 				389ECE052601144100D86C4F /* ConcurrentMap.swift in Sources */,
 				E4984C5262A90469788754BB /* PreferencesEditorProvider.swift in Sources */,
 				DD399FB31EACB9343C944C4C /* PreferencesEditorStateModel.swift in Sources */,
+				19E1F7EA29D082ED005C8D20 /* IconConfigProvider.swift in Sources */,
 				44190F0BBA464D74B857D1FB /* PreferencesEditorRootView.swift in Sources */,
 				E97285ED9B814CD5253C6658 /* AddCarbsDataFlow.swift in Sources */,
 				CE48C86428CA69D5007C0598 /* OmniBLEPumpManagerExtensions.swift in Sources */,
@@ -2520,9 +2608,11 @@
 				38569353270B5E350002C50D /* CGMRootView.swift in Sources */,
 				69A31254F2451C20361D172F /* BolusStateModel.swift in Sources */,
 				0CEA2EA070AB041AF3E3745B /* BolusRootView.swift in Sources */,
+				1967DFC029D053AC00759F30 /* IconSelection.swift in Sources */,
 				FEFFA7A22929FE49007B8193 /* UIDevice+Extensions.swift in Sources */,
 				F90692D3274B9A130037068D /* AppleHealthKitRootView.swift in Sources */,
 				3862CC1F273FDC9200BF832C /* CalibrationsChart.swift in Sources */,
+				19E1F7EC29D082FE005C8D20 /* IconConfigStateModel.swift in Sources */,
 				711C0CB42CAABE788916BC9D /* ManualTempBasalDataFlow.swift in Sources */,
 				BF1667ADE69E4B5B111CECAE /* ManualTempBasalProvider.swift in Sources */,
 				F90692D6274B9A450037068D /* HealthKitStateModel.swift in Sources */,
@@ -2545,10 +2635,12 @@
 				BA00D96F7B2FF169A06FB530 /* CGMStateModel.swift in Sources */,
 				61962FCAF8A2D222553AC5A3 /* LibreConfigDataFlow.swift in Sources */,
 				6EADD581738D64431902AC0A /* LibreConfigProvider.swift in Sources */,
+				CE94598729E9E4110047C9C6 /* WatchConfigRootView.swift in Sources */,
 				903D18976088B09110BCBE29 /* LibreConfigStateModel.swift in Sources */,
 				9050F378F0063C064D7FFC86 /* LibreConfigRootView.swift in Sources */,
 				B7C465E9472624D8A2BE2A6A /* CalibrationsDataFlow.swift in Sources */,
 				320D030F724170A637F06D50 /* CalibrationsProvider.swift in Sources */,
+				19E1F7E829D082D0005C8D20 /* IconConfigDataFlow.swift in Sources */,
 				E25073BC86C11C3D6A42F5AC /* CalibrationsStateModel.swift in Sources */,
 				BA90041DC8991147E5C8C3AA /* CalibrationsRootView.swift in Sources */,
 				E3A08AAE59538BC8A8ABE477 /* NotificationsConfigDataFlow.swift in Sources */,
@@ -2727,7 +2819,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = "$(APP_VERSION)";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -2786,7 +2878,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = "$(APP_VERSION)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -2804,6 +2896,7 @@
 				APP_GROUP_ID = "$(APP_GROUP_ID)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "$(APP_ICON)";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)";
 				CODE_SIGN_ENTITLEMENTS = FreeAPS/Resources/FreeAPS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -2811,8 +2904,12 @@
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "$(DEVELOPER_TEAM)";
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Dependencies/ios-armv7_arm64",
+				);
 				INFOPLIST_FILE = FreeAPS/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2825,6 +2922,7 @@
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					CoreNFC,
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2838,8 +2936,9 @@
 			buildSettings = {
 				APP_DISPLAY_NAME = "$(APP_DISPLAY_NAME)";
 				APP_GROUP_ID = "$(APP_GROUP_ID)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = iAPS_Loop_Text;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "$(APP_ICON)";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)";
 				CODE_SIGN_ENTITLEMENTS = FreeAPS/Resources/FreeAPS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -2847,8 +2946,12 @@
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "$(DEVELOPER_TEAM)";
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Dependencies/ios-armv7_arm64",
+				);
 				INFOPLIST_FILE = FreeAPS/Resources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2861,6 +2964,7 @@
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					CoreNFC,
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2876,6 +2980,10 @@
 				APP_DISPLAY_NAME = "$(APP_DISPLAY_NAME)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = "$(APP_ICON)";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_STICKER_CONTENT = YES;
+				ASSETCATALOG_COMPILER_STANDALONE_ICON_BEHAVIOR = all;
+				ASSETCATALOG_COMPILER_TARGET_STICKERS_ICON_ROLE = "host-app";
 				BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = FreeAPSWatch/FreeAPSWatch.entitlements;
@@ -2905,8 +3013,12 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APP_DISPLAY_NAME = "$(APP_DISPLAY_NAME)";
-				ASSETCATALOG_COMPILER_APPICON_NAME = iAPS_Loop_Text;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "$(APP_ICON)";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_STICKER_CONTENT = YES;
+				ASSETCATALOG_COMPILER_STANDALONE_ICON_BEHAVIOR = all;
+				ASSETCATALOG_COMPILER_TARGET_STICKERS_ICON_ROLE = "host-app";
 				BUNDLE_IDENTIFIER = "$(BUNDLE_IDENTIFIER)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_ENTITLEMENTS = FreeAPSWatch/FreeAPSWatch.entitlements;

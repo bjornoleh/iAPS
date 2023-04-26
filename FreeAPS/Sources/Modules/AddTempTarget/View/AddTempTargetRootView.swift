@@ -12,9 +12,9 @@ extension AddTempTarget {
         @State private var isEditing = false
 
         @FetchRequest(
-            entity: ViewPercentage.entity(),
+            entity: TempTargetsSlider.entity(),
             sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)]
-        ) var isEnabledArray: FetchedResults<ViewPercentage>
+        ) var isEnabledArray: FetchedResults<TempTargetsSlider>
 
         @Environment(\.managedObjectContext) var moc
 
@@ -35,55 +35,55 @@ extension AddTempTarget {
                     }
                 }
 
-                Toggle(isOn: $state.viewPercantage) {
-                    HStack {
-                        Text("Use Slider for")
-                        Image(systemName: "figure.highintensity.intervaltraining")
-                        Text("or")
-                        Image(systemName: "fork.knife")
-                    }
+                HStack {
+                    Text("Experimental")
+                    Toggle(isOn: $state.viewPercantage) {}.controlSize(.mini)
+                    Image(systemName: "figure.highintensity.intervaltraining")
+                    Image(systemName: "fork.knife")
                 }
 
                 if state.viewPercantage {
                     Section(
-                        header: Text("Percent Insulin")
+                        header: Text("")
                     ) {
                         VStack {
                             Slider(
                                 value: $state.percentage,
                                 in: 15 ...
-                                    Double(state.maxValue * 100),
+                                    min(Double(state.maxValue * 100), 200),
                                 step: 1,
                                 onEditingChanged: { editing in
                                     isEditing = editing
                                 }
                             )
-                            Text("\(state.percentage.formatted(.number)) %")
-                                .foregroundColor(isEditing ? .orange : .blue)
-                                .font(.largeTitle)
-                            Divider()
-                            Text(
-                                NSLocalizedString("Target glucose", comment: "") +
-                                    (
-                                        state
-                                            .units == .mmolL ?
-                                            ": \(computeTarget().asMmolL.formatted(.number.grouping(.never).rounded().precision(.fractionLength(1)))) mmol/L" :
-                                            ": \(computeTarget().formatted(.number.grouping(.never).rounded().precision(.fractionLength(0)))) mg/dl"
-                                    )
-                            ) // .foregroundColor(.primary).italic()
+                            HStack {
+                                Text("\(state.percentage.formatted(.number)) % Insulin")
+                                    .foregroundColor(isEditing ? .orange : .blue)
+                                    .font(.largeTitle)
+                            }
+                            // Only display target slider when not 100 %
+                            if state.percentage != 100 {
+                                Divider()
 
-                            Slider(
-                                value: $state.hbt,
-                                in: 104 ... 180,
-                                step: 1
-                            )
-                            Text(
-                                state
-                                    .units == .mgdL ? "Half normal Basal at: \(state.hbt.formatted(.number)) mg/dl" :
-                                    "Half normal Basal at: \(state.hbt.asMmolL.formatted(.number.grouping(.never).rounded().precision(.fractionLength(1)))) mmol/L"
-                            )
-                            .foregroundColor(.green)
-                            .font(.caption).italic()
+                                Slider(
+                                    value: $state.hbt,
+                                    in: 101 ... 295,
+                                    step: 1
+                                ).accentColor(.green)
+
+                                HStack {
+                                    Text(
+                                        (
+                                            state
+                                                .units == .mmolL ?
+                                                "\(state.computeTarget().asMmolL.formatted(.number.grouping(.never).rounded().precision(.fractionLength(1)))) mmol/L" :
+                                                "\(state.computeTarget().formatted(.number.grouping(.never).rounded().precision(.fractionLength(0)))) mg/dl"
+                                        )
+                                            + NSLocalizedString("  Target Glucose", comment: "")
+                                    )
+                                    .foregroundColor(.green)
+                                }
+                            }
                         }
                     }
                 } else {
@@ -147,33 +147,6 @@ extension AddTempTarget {
             .navigationTitle("Enact Temp Target")
             .navigationBarTitleDisplayMode(.automatic)
             .navigationBarItems(leading: Button("Close", action: state.hideModal))
-            .onDisappear {
-                if state.viewPercantage, state.saveSettings {
-                    let isEnabledMoc = ViewPercentage(context: moc)
-                    isEnabledMoc.enabled = true
-                    isEnabledMoc.date = Date()
-                    isEnabledMoc.hbt = state.hbt
-                    try? moc.save()
-                } else {
-                    let isEnabledMoc = ViewPercentage(context: moc)
-                    isEnabledMoc.enabled = false
-                    isEnabledMoc.date = Date()
-                    isEnabledMoc.hbt = isEnabledArray.first?.hbt ?? 160
-                    try? moc.save()
-                }
-            }
-        }
-
-        func computeTarget() -> Decimal {
-            var ratio = Decimal(state.percentage / 100)
-            let c = Decimal(state.hbt - 100)
-            var target = (c / ratio) - c + 100
-
-            if c * (c + target - 100) <= 0 {
-                ratio = state.maxValue
-                target = (c / ratio) - c + 100
-            }
-            return target
         }
 
         private func presetView(for preset: TempTarget) -> some View {

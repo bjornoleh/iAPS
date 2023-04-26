@@ -7,7 +7,7 @@
     "useLocalGlucoseSource": false,
     "localGlucosePort": 8080,
     "debugOptions": false,
-    "insulinReqFraction": 1.5,
+    "insulinReqPercentage": 70,
     "skipBolusScreenAfterCarbs": false,
     "displayHR": false,
     "cgm": "nightscout",
@@ -22,9 +22,10 @@
     "useAppleHealth": false,
     "animatedBackground": false,
     "displayStatistics": false,
-    "useFPUconversion": false
+    "useFPUconversion": true
     "individualAdjustmentFactor": 0.5,
     "timeCap": 8,
     "minuteInterval": 30,
-    "delay": 60
+    "delay": 60,
+    "displayOnWatch": "BGTarget"
 }
