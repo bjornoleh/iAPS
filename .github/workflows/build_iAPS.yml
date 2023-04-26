@@ -13,8 +13,8 @@ on:
 
 env:
   UPSTREAM_REPO: Artificial-Pancreas/iAPS
-  UPSTREAM_BRANCH: main # upstream branch to sync from
-  TARGET_BRANCH: main # branch on fork to build from
+  UPSTREAM_BRANCH: dev # upstream branch to sync from
+  TARGET_BRANCH: alpha-bo # branch on fork to build from
   SYNC_UPSTREAM: 'true' # set to 'false' or 'true' to disable / enable syncing of fork with upstream repository
 
 jobs:

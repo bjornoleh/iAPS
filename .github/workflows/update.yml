@@ -15,8 +15,8 @@ on:
 
 env:
   UPSTREAM_REPO: Artificial-Pancreas/iAPS
-  UPSTREAM_BRANCH: main
-  TARGET_BRANCH: main # target branch on fork to be kept "alive" for running scheduled workflows (repo activity required at least every 60 days for scheduled workflows to remain active)
+  UPSTREAM_BRANCH: dev
+  TARGET_BRANCH: alpha-bo # target branch on fork to be kept "alive" for running scheduled workflows (repo activity required at least every 60 days for scheduled workflows to remain active)
 
 jobs:
   check_latest_from_upstream:
