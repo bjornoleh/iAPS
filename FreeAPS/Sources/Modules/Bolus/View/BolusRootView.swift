@@ -181,6 +181,7 @@ extension Bolus {
                 .font(.footnote)
                 .padding(.top, 10)
                 Divider()
+
                 // Formula
                 VStack(spacing: 5) {
                     let unit = NSLocalizedString(
@@ -189,6 +190,11 @@ extension Bolus {
                     )
                     let color: Color = (state.percentage != 100 && state.insulin > 0) ? .secondary : .blue
                     let fontWeight: Font.Weight = (state.percentage != 100 && state.insulin > 0) ? .regular : .bold
+                    HStack {
+                        Text("oref0 insulinReq").font(.callout).foregroundColor(.secondary)
+                        Text(state.insulinRequired.formatted() + unit).font(.callout).foregroundColor(.secondary)
+                    }
+                    Divider()
                     HStack {
                         Text(NSLocalizedString("Insulin recommended", comment: "") + ":").font(.callout)
                         Text(state.insulin.formatted() + unit).font(.callout).foregroundColor(color).fontWeight(fontWeight)
