@@ -1,4 +1,5 @@
 import Combine
+import CoreData
 import LoopKitUI
 import SwiftDate
 import SwiftUI
@@ -10,7 +11,6 @@ extension Home {
         @Injected() var nightscoutManager: NightscoutManager!
         private let timer = DispatchTimer(timeInterval: 5)
         private(set) var filteredHours = 24
-
         @Published var glucose: [BloodGlucose] = []
         @Published var suggestion: Suggestion?
         @Published var uploadStats = false
@@ -58,6 +58,8 @@ extension Home {
         @Published var displayXgridLines: Bool = false
         @Published var displayYgridLines: Bool = false
         @Published var thresholdLines: Bool = false
+
+        let coredataContext = CoreDataStack.shared.persistentContainer.viewContext
 
         override func subscribe() {
             setupGlucose()
@@ -179,7 +181,8 @@ extension Home {
                         let view = PumpConfig.PumpSettingsView(
                             pumpManager: pumpManager,
                             bluetoothManager: bluetoothProvider,
-                            completionDelegate: self
+                            completionDelegate: self,
+                            setupDelegate: self
                         ).asAny()
                         self.router.mainSecondaryModalView.send(view)
                     } else {
@@ -199,6 +202,15 @@ extension Home {
 
         func cancelBolus() {
             apsManager.cancelBolus()
+        }
+
+        func cancelProfile() {
+            coredataContext.perform { [self] in
+                let profiles = Override(context: self.coredataContext)
+                profiles.enabled = false
+                profiles.date = Date()
+                try? self.coredataContext.save()
+            }
         }
 
         private func setupGlucose() {
@@ -444,5 +456,22 @@ extension Home.StateModel:
 extension Home.StateModel: CompletionDelegate {
     func completionNotifyingDidComplete(_: CompletionNotifying) {
         setupPump = false
+    }
+}
+
+extension Home.StateModel: PumpManagerOnboardingDelegate {
+    func pumpManagerOnboarding(didCreatePumpManager pumpManager: PumpManagerUI) {
+        provider.apsManager.pumpManager = pumpManager
+        if let insulinType = pumpManager.status.insulinType {
+            settingsManager.updateInsulinCurve(insulinType)
+        }
+    }
+
+    func pumpManagerOnboarding(didOnboardPumpManager _: PumpManagerUI) {
+        // nothing to do
+    }
+
+    func pumpManagerOnboarding(didPauseOnboarding _: PumpManagerUI) {
+        // TODO:
     }
 }

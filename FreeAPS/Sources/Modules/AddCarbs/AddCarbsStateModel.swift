@@ -12,17 +12,18 @@ extension AddCarbs {
         @Published var protein: Decimal = 0
         @Published var fat: Decimal = 0
         @Published var carbsRequired: Decimal?
-        @Published var useFPU: Bool = true
+        @Published var useFPUconversion: Bool = true
         @Published var dish: String = ""
         @Published var selection: Presets?
         @Published var summation: [String] = []
+        @Published var maxCarbs: Decimal = 0
 
         let coredataContext = CoreDataStack.shared.persistentContainer.viewContext
-        // @Environment(\.managedObjectContext) var moc
 
         override func subscribe() {
+            subscribeSetting(\.useFPUconversion, on: $useFPUconversion) { useFPUconversion = $0 }
             carbsRequired = provider.suggestion?.carbsReq
-            useFPU = settingsManager.settings.useFPUconversion
+            maxCarbs = settings.settings.maxCarbs
         }
 
         func add() {
@@ -30,8 +31,9 @@ extension AddCarbs {
                 showModal(for: nil)
                 return
             }
+            carbs = min(carbs, maxCarbs)
 
-            if useFPU {
+            if useFPUconversion {
                 // -------------------------- FPU--------------------------------------
                 let interval = settings.settings.minuteInterval // Interval betwwen carbs
                 let timeCap = settings.settings.timeCap // Max Duration

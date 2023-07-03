@@ -51,17 +51,18 @@ https://loopkit.github.io/loopdocs/gh-actions/gh-overview/
 
 # iPhone and iPod
 
-iAPS app runs on iPhone or iPod. An iPhone 7 or newer is recommended.
+iAPS app runs on iPhone or iPod. An iPhone 8 or newer is required.
 
 # Documentation
 
-[Discord iAPS - main branch channel](https://discord.com/channels/1020905149037813862/1021041588627062854)
+[Discord iAPS - Server ](https://discord.gg/pmQjr9RDC)
 
 [iAPS documentation (under development)](https://iaps.readthedocs.io/en/latest/)
 
 [OpenAPS documentation](https://openaps.readthedocs.io/en/latest/)
 
-[Crowdin Project for translation of iAPS](https://crowdin.com/project/freeaps-x)
+[Crowdin Project for translation of iAPS](https://crowdin.com/project/iaps)  
+[![Crowdin](https://badges.crowdin.net/iaps/localized.svg)](https://crowdin.com/project/iaps)
 
 [Middleware code for iAPS](https://github.com/Jon-b-m/middleware)
 
