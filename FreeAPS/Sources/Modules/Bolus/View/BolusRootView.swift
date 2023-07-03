@@ -37,6 +37,19 @@ extension Bolus {
                         }
                     } else {
                         HStack {
+                            Text("oref0 insulinbehov")
+                            Spacer()
+                            Text(
+                                formatter
+                                    .string(from: state.insulinRequired as NSNumber)! +
+                                    NSLocalizedString(" U", comment: "Insulin unit")
+                            ).foregroundColor(.secondary)
+                        }.contentShape(Rectangle())
+                            .onTapGesture {
+                                if state.insulinRequired > 0 {
+                                    state.amount = state.insulinRequired }
+                            }
+                        HStack {
                             Text("Insulin recommended")
                             Spacer()
                             Text(
@@ -58,12 +71,12 @@ extension Bolus {
                         }
                     }
                 }
-                header: { Text("Recommendation") }
+                //     header: { Text("Recommendation") }
 
                 if !state.waitForSuggestion {
                     Section {
                         HStack {
-                            Text("Amount")
+                            Text("Bolus")
                             Spacer()
                             DecimalTextField(
                                 "0",
@@ -75,7 +88,7 @@ extension Bolus {
                             Text("U").foregroundColor(.secondary)
                         }
                     }
-                    header: { Text("Bolus") }
+                    //       header: { Text("Bolus") }
                     Section {
                         Button { state.add() }
                         label: { Text("Enact bolus") }
