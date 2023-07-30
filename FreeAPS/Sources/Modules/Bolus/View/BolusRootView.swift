@@ -37,7 +37,7 @@ extension Bolus {
                         }
                     } else {
                         HStack {
-                            Text("oref0 insulinbehov")
+                            Text("Insulin required")
                             Spacer()
                             Text(
                                 formatter
@@ -50,7 +50,7 @@ extension Bolus {
                                     state.amount = state.insulinRequired }
                             }
                         HStack {
-                            Text("Insulin recommended")
+                            Text("Måltidsbolus")
                             Spacer()
                             Text(
                                 formatter
