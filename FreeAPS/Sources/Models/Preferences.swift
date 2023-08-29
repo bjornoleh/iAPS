@@ -39,7 +39,7 @@ struct Preferences: JSON {
     var insulinPeakTime: Decimal = 60
     var carbsReqThreshold: Decimal = 1.0
     var noisyCGMTargetMultiplier: Decimal = 1.3
-    var suspendZerosIOB: Bool = true
+    var suspendZerosIOB: Bool = false
     var timestamp: Date?
     var maxDeltaBGthreshold: Decimal = 0.3
     var adjustmentFactor: Decimal = 0.5
