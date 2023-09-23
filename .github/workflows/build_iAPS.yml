@@ -15,27 +15,20 @@ env:
   SCHEDULED_SYNC: ${{ vars.SCHEDULED_SYNC }}
 
 jobs:
-  check_vars:
-    runs-on: macos-13
-    steps:
-      # Uncomment to manually select Xcode version if needed
-      - name: Variables
-        run: |
-          echo "with env-context: ${{ env.SCHEDULED_SYNC }}"
-          echo "without context: $SCHEDULED_SYNC"
-
-          echo "SCHEDULED_SYNC=${SCHEDULED_SYNC:=false}" >> $GITHUB_ENV
-      - name: Variables 2
-        run: |
-          echo "with env-context: ${{ env.SCHEDULED_SYNC }}"
-          echo "without context: $SCHEDULED_SYNC"
-        
-
   validate:
-    needs: check_vars
     name: Validate
     uses: ./.github/workflows/validate_secrets.yml
     secrets: inherit
+
+  sync_check:
+    needs: validate
+    name: Sync Check
+    runs-on: macos-13
+    steps:
+      - name: Set SYNC_SCHEDULED variable
+        run: |
+          echo "SCHEDULED_SYNC=${SCHEDULED_SYNC:=false}" >> $GITHUB_ENV
+          echo "The environment variable SCHEDULED_SYNC is set to: $SCHEDULED_SYNC."
     
   build:
     needs: validate
