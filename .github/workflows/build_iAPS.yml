@@ -31,7 +31,7 @@ jobs:
           echo "The environment variable SCHEDULED_SYNC is set to: $SCHEDULED_SYNC."
     
   build:
-    needs: validate
+    needs: [validate, sync_check]
     name: Build
     runs-on: macos-13
     steps:
