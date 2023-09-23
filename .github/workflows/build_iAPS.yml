@@ -12,7 +12,7 @@ on:
 
 env:
   TARGET_BRANCH: ${{ github.ref_name }} # branch on fork to build from (relpace with specific branch name if needed)
-  SCHEDULED_SYNC: ${{ vars.SCHEDULED_SYNC }} ?? 'false'
+  SCHEDULED_SYNC: ${{ vars.SCHEDULED_SYNC ?? 'false' }}
 
 jobs:
   check_vars:
