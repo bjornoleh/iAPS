@@ -24,8 +24,7 @@ jobs:
           echo "with env-context: ${{ env.SCHEDULED_SYNC }}"
           echo "without context: $SCHEDULED_SYNC"
 
-          scheduled_sync="${SCHEDULED_SYNC:-'false'}"
-          echo "SCHEDULED_SYNC=$scheduled_sync" >> $GITHUB_ENV
+          echo "SCHEDULED_SYNC=${SCHEDULED_SYNC:=false}" >> $GITHUB_ENV
       - name: Variables 2
         run: |
           echo "with env-context: ${{ env.SCHEDULED_SYNC }}"
