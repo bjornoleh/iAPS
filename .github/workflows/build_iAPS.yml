@@ -12,8 +12,19 @@ on:
 
 env:
   TARGET_BRANCH: ${{ github.ref_name }} # branch on fork to build from (relpace with specific branch name if needed)
+  SCHEDULED_SYNC: ${{ vars.SCHEDULED_SYNC }} ?? 'false'
 
 jobs:
+  check_vars:
+    runs-on: macos-13
+    steps:
+      # Uncomment to manually select Xcode version if needed
+      - name: Variables
+        run: |
+          echo "with env-context: ${{ env.SCHEDULED_SYNC }}"
+          echo "without context: $SCHEDULED_SYNC"
+        
+
   validate:
     name: Validate
     uses: ./.github/workflows/validate_secrets.yml
