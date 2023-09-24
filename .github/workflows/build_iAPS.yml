@@ -12,7 +12,6 @@ on:
 
 env:
   TARGET_BRANCH: ${{ github.ref_name }} # branch on fork to build from (relpace with specific branch name if needed)
-  SCHEDULED_SYNC: ${{ vars.SCHEDULED_SYNC }}
 
 jobs:
   validate:
@@ -20,18 +19,8 @@ jobs:
     uses: ./.github/workflows/validate_secrets.yml
     secrets: inherit
 
-  sync_check:
-    needs: validate
-    name: Sync Check
-    runs-on: macos-13
-    steps:
-      - name: Set SYNC_SCHEDULED variable
-        run: |
-          echo "SCHEDULED_SYNC=${SCHEDULED_SYNC:=false}" >> $GITHUB_ENV
-          echo "The environment variable SCHEDULED_SYNC is set to: $SCHEDULED_SYNC."
-    
   build:
-    needs: [validate, sync_check]
+    needs: validate
     name: Build
     runs-on: macos-13
     steps:
