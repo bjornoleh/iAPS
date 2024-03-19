@@ -133,7 +133,6 @@ platform :ios do
       artifacts: ["*.mobileprovision", "*.ipa", "*.dSYM.zip"]
     )
   end
-end
 
 desc "Push to TestFlight"
   lane :release do
