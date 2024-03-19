@@ -152,6 +152,7 @@ desc "Push to TestFlight"
           "default": {
             whats_new: "#{git_branch} #{last_git_commit[:abbreviated_commit_hash]}", 
           }
+      }
     )
   end
 
