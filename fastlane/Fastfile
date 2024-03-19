@@ -147,7 +147,11 @@ desc "Push to TestFlight"
       skip_submission: false,
       ipa: "iAPS.ipa",
       skip_waiting_for_build_processing: true,
-      changelog: git_branch + " " + last_git_commit[:abbreviated_commit_hash],
+      changelog: "#{git_branch} #{last_git_commit[:abbreviated_commit_hash]}",
+      localized_build_info: {
+          "default": {
+            whats_new: "#{git_branch} #{last_git_commit[:abbreviated_commit_hash]}", 
+          }
     )
   end
 
