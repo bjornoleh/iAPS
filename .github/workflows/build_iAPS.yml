@@ -80,7 +80,7 @@ jobs:
           --method POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
-          /repos/${{ github.repository_owner }}/iAPS/git/refs \
+          /repos/${{ github.repository }}/git/refs \
           -f ref='refs/heads/alive' \
           -f sha=$SHA
   
