@@ -69,20 +69,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # Get ref for Artificial-Pancreas/iAPS:main
-        SHA=$(curl -sS https://api.github.com/repos/${{ env.UPSTREAM_REPO }}/git/refs \
-          | jq '.[] | select(.ref == "refs/heads/main" ) | .object.sha' \
-          | tr -d '"'
-        );
         
-        # Create alive branch based on Artificial-Pancreas/iAPS:dev
+        # Create alive branch based on the main branch
         gh api \
           --method POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           /repos/${{ github.repository }}/git/refs \
           -f ref='refs/heads/alive' \
-          -f sha=$SHA
   
   # Performs keepalive to avoid stale fork
   check_latest_from_upstream:
