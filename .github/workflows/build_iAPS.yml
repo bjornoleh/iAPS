@@ -69,14 +69,20 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        # Get ref for your main branch
+        SHA=$(curl -sS https://api.github.com/repos/${{ github.repository }}/git/refs \
+          | jq '.[] | select(.ref == "refs/heads/main" ) | .object.sha' \
+          | tr -d '"'
+        );
         
-        # Create alive branch based on the main branch
+        # Create alive branch based on your main main branch
         gh api \
           --method POST \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
           /repos/${{ github.repository }}/git/refs \
           -f ref='refs/heads/alive' \
+          -f sha=$SHA
   
   # Performs keepalive to avoid stale fork
   check_latest_from_upstream:
