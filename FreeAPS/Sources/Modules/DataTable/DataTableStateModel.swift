@@ -1,17 +1,31 @@
+import CoreData
 import SwiftUI
 
 extension DataTable {
     final class StateModel: BaseStateModel<Provider> {
         @Injected() var broadcaster: Broadcaster!
         @Injected() var unlockmanager: UnlockManager!
+        @Injected() private var storage: FileStorage!
+        @Injected() var pumpHistoryStorage: PumpHistoryStorage!
+        @Injected() var healthKitManager: HealthKitManager!
+
+        let coredataContext = CoreDataStack.shared.persistentContainer.viewContext
 
         @Published var mode: Mode = .treatments
         @Published var treatments: [Treatment] = []
         @Published var glucose: [Glucose] = []
+        @Published var manualGlucose: Decimal = 0
+        @Published var maxBolus: Decimal = 0
+        @Published var externalInsulinAmount: Decimal = 0
+        @Published var externalInsulinDate = Date()
+        @Published var tdd: (Decimal, Decimal, Double) = (0, 0, 0)
+        @Published var basalInsulin: Decimal = 0
+
         var units: GlucoseUnits = .mmolL
 
         override func subscribe() {
             units = settingsManager.settings.units
+            maxBolus = provider.pumpSettings().maxBolus
             setupTreatments()
             setupGlucose()
             broadcaster.register(SettingsObserver.self, observer: self)
@@ -21,10 +35,18 @@ extension DataTable {
             broadcaster.register(GlucoseObserver.self, observer: self)
         }
 
-        private func setupTreatments() {
-            DispatchQueue.global().async {
-                let units = self.settingsManager.settings.units
+        private let processQueue =
+            DispatchQueue(label: "setupTreatments.processQueue") // Ensure that only one instance of this function can execute at a time
 
+        private func setupTreatments() {
+            // Log that the function is starting for testing purposes
+            debug(.service, "setupTreatments() started")
+
+            // DispatchQueue.global().async { // Original code with global concurrent queue
+
+            // Ensure that only one instance of this function can execute at a time by using a serial queue
+            processQueue.async {
+                let units = self.settingsManager.settings.units
                 let carbs = self.provider.carbs()
                     .filter { !($0.isFPU ?? false) }
                     .map {
@@ -32,12 +54,20 @@ extension DataTable {
                             return Treatment(
                                 units: units,
                                 type: .carbs,
-                                date: $0.createdAt,
+                                date: $0.actualDate ?? $0.createdAt,
                                 amount: $0.carbs,
-                                id: id
+                                id: id,
+                                fpuID: $0.fpuID,
+                                note: $0.note
                             )
                         } else {
-                            return Treatment(units: units, type: .carbs, date: $0.createdAt, amount: $0.carbs)
+                            return Treatment(
+                                units: units,
+                                type: .carbs,
+                                date: $0.actualDate ?? $0.createdAt,
+                                amount: $0.carbs,
+                                note: $0.note
+                            )
                         }
                     }
 
@@ -47,18 +77,27 @@ extension DataTable {
                         Treatment(
                             units: units,
                             type: .fpus,
-                            date: $0.createdAt,
+                            date: $0.actualDate ?? $0.createdAt,
                             amount: $0.carbs,
                             id: $0.id,
                             isFPU: $0.isFPU,
-                            fpuID: $0.fpuID
+                            fpuID: $0.fpuID,
+                            note: $0.note
                         )
                     }
 
                 let boluses = self.provider.pumpHistory()
                     .filter { $0.type == .bolus }
                     .map {
-                        Treatment(units: units, type: .bolus, date: $0.timestamp, amount: $0.amount, idPumpEvent: $0.id)
+                        Treatment(
+                            units: units,
+                            type: .bolus,
+                            date: $0.timestamp,
+                            amount: $0.amount,
+                            idPumpEvent: $0.id,
+                            isSMB: $0.isSMB,
+                            isExternal: $0.isExternal
+                        )
                     }
 
                 let tempBasals = self.provider.pumpHistory()
@@ -107,6 +146,11 @@ extension DataTable {
                         .flatMap { $0 }
                         .sorted { $0.date > $1.date }
                 }
+
+                DispatchQueue.main.async {
+                    let increments = self.settingsManager.preferences.bolusIncrement
+                    self.tdd = TotalDailyDose().totalDailyDose(self.provider.pumpHistory(), increment: Double(increments))
+                }
             }
         }
 
@@ -129,9 +173,88 @@ extension DataTable {
                 .store(in: &lifetime)
         }
 
-        func deleteGlucose(at index: Int) {
-            let id = glucose[index].id
+        func deleteGlucose(_ glucose: Glucose) {
+            let id = glucose.id
             provider.deleteGlucose(id: id)
+
+            let fetchRequest: NSFetchRequest<NSFetchRequestResult>
+            fetchRequest = NSFetchRequest(entityName: "Readings")
+            fetchRequest.predicate = NSPredicate(format: "id == %@", id)
+            let deleteRequest = NSBatchDeleteRequest(
+                fetchRequest: fetchRequest
+            )
+            deleteRequest.resultType = .resultTypeObjectIDs
+            do {
+                let deleteResult = try coredataContext.execute(deleteRequest) as? NSBatchDeleteResult
+                if let objectIDs = deleteResult?.result as? [NSManagedObjectID] {
+                    NSManagedObjectContext.mergeChanges(
+                        fromRemoteContextSave: [NSDeletedObjectsKey: objectIDs],
+                        into: [coredataContext]
+                    )
+                }
+            } catch { /* To do: handle any thrown errors. */ }
+
+            // Deletes Manual Glucose
+            if (glucose.glucose.type ?? "") == GlucoseType.manual.rawValue {
+                provider.deleteManualGlucose(date: glucose.glucose.dateString)
+            }
+        }
+
+        func addManualGlucose() {
+            let glucose = units == .mmolL ? manualGlucose.asMgdL : manualGlucose
+            let now = Date()
+            let id = UUID().uuidString
+
+            let saveToJSON = BloodGlucose(
+                _id: id,
+                direction: nil,
+                date: Decimal(now.timeIntervalSince1970) * 1000,
+                dateString: now,
+                unfiltered: nil,
+                filtered: nil,
+                noise: nil,
+                glucose: Int(glucose),
+                type: GlucoseType.manual.rawValue
+            )
+            provider.glucoseStorage.storeGlucose([saveToJSON])
+            debug(.default, "Manual Glucose saved to glucose.json")
+            // Save to Health
+            var saveToHealth = [BloodGlucose]()
+            saveToHealth.append(saveToJSON)
+        }
+
+        func addExternalInsulin() {
+            guard externalInsulinAmount > 0 else {
+                showModal(for: nil)
+                return
+            }
+
+            externalInsulinAmount = min(externalInsulinAmount, maxBolus * 3) // Allow for 3 * Max Bolus for external insulin
+            unlockmanager.unlock()
+                .sink { _ in } receiveValue: { [weak self] _ in
+                    guard let self = self else { return }
+                    pumpHistoryStorage.storeEvents(
+                        [
+                            PumpHistoryEvent(
+                                id: UUID().uuidString,
+                                type: .bolus,
+                                timestamp: externalInsulinDate,
+                                amount: externalInsulinAmount,
+                                duration: nil,
+                                durationMin: nil,
+                                rate: nil,
+                                temp: nil,
+                                carbInput: nil,
+                                isExternal: true
+                            )
+                        ]
+                    )
+                    debug(.default, "External insulin saved to pumphistory.json")
+
+                    // Reset amount to 0 for next entry.
+                    externalInsulinAmount = 0
+                }
+                .store(in: &lifetime)
         }
     }
 }

@@ -22,7 +22,7 @@ extension CREditor {
 
         var body: some View {
             Form {
-                if let autotune = state.autotune {
+                if let autotune = state.autotune, !state.settingsManager.settings.onlyAutotuneBasals {
                     Section(header: Text("Autotune")) {
                         HStack {
                             Text("Calculated Ratio")
@@ -48,6 +48,7 @@ extension CREditor {
                     .disabled(state.items.isEmpty)
                 }
             }
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .onAppear(perform: configureView)
             .navigationTitle("Carb Ratios")
             .navigationBarTitleDisplayMode(.automatic)

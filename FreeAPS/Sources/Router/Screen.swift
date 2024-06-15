@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import Swinject
 
@@ -14,9 +15,9 @@ enum Screen: Identifiable, Hashable {
     case crEditor
     case targetsEditor
     case preferencesEditor
-    case addCarbs
+    case addCarbs(editMode: Bool, override: Bool)
     case addTempTarget
-    case bolus(waitForSuggestion: Bool)
+    case bolus(waitForSuggestion: Bool, fetch: Bool)
     case manualTempBasal
     case autotuneConfig
     case dataTable
@@ -26,8 +27,16 @@ enum Screen: Identifiable, Hashable {
     case calibrations
     case notificationsConfig
     case fpuConfig
+    case iconConfig
+    case overrideProfilesConfig
     case snooze
-
+    case statistics
+    case watch
+    case statisticsConfig
+    case bolusCalculatorConfig
+    case dynamicISF
+    case contactTrick
+    case sharing
     var id: Int { String(reflecting: self).hashValue }
 }
 
@@ -37,10 +46,7 @@ extension Screen {
         case .loading:
             ProgressView()
         case .home:
-            Home.RootView(
-                resolver: resolver,
-                selectedState: .day
-            )
+            Home.RootView(resolver: resolver)
         case .settings:
             Settings.RootView(resolver: resolver)
         case let .configEditor(file):
@@ -61,12 +67,12 @@ extension Screen {
             TargetsEditor.RootView(resolver: resolver)
         case .preferencesEditor:
             PreferencesEditor.RootView(resolver: resolver)
-        case .addCarbs:
-            AddCarbs.RootView(resolver: resolver)
+        case let .addCarbs(editMode, override):
+            AddCarbs.RootView(resolver: resolver, editMode: editMode, override: override)
         case .addTempTarget:
             AddTempTarget.RootView(resolver: resolver)
-        case let .bolus(waitForSuggestion):
-            Bolus.RootView(resolver: resolver, waitForSuggestion: waitForSuggestion)
+        case let .bolus(waitForSuggestion, fetch):
+            Bolus.RootView(resolver: resolver, waitForSuggestion: waitForSuggestion, fetch: fetch)
         case .manualTempBasal:
             ManualTempBasal.RootView(resolver: resolver)
         case .autotuneConfig:
@@ -85,8 +91,26 @@ extension Screen {
             NotificationsConfig.RootView(resolver: resolver)
         case .fpuConfig:
             FPUConfig.RootView(resolver: resolver)
+        case .iconConfig:
+            IconConfig.RootView(resolver: resolver)
+        case .overrideProfilesConfig:
+            OverrideProfilesConfig.RootView(resolver: resolver)
         case .snooze:
             Snooze.RootView(resolver: resolver)
+        case .watch:
+            WatchConfig.RootView(resolver: resolver)
+        case .statistics:
+            Stat.RootView(resolver: resolver)
+        case .statisticsConfig:
+            StatConfig.RootView(resolver: resolver)
+        case .bolusCalculatorConfig:
+            BolusCalculatorConfig.RootView(resolver: resolver)
+        case .dynamicISF:
+            Dynamic.RootView(resolver: resolver)
+        case .contactTrick:
+            ContactTrick.RootView(resolver: resolver)
+        case .sharing:
+            Sharing.RootView(resolver: resolver)
         }
     }
 

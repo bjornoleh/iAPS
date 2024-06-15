@@ -1,3 +1,4 @@
+import CoreData
 import SpriteKit
 import SwiftDate
 import SwiftUI
@@ -9,26 +10,51 @@ extension Home {
 
         @StateObject var state = StateModel()
         @State var isStatusPopupPresented = false
-        @State var selectedState: durationState
+        @State var showCancelAlert = false
+        @State var showCancelTTAlert = false
+        @State var triggerUpdate = false
 
-        // Average/Median/Readings and CV/SD titles and values switches when you tap them
-        @State var averageOrMedianTitle = NSLocalizedString("Average", comment: "")
-        @State var median_ = ""
-        @State var average_ = ""
-        @State var readings = ""
+        let buttonFont = Font.custom("TimeButtonFont", size: 14)
 
-        @State var averageOrmedian = ""
-        @State var CV_or_SD_Title = NSLocalizedString("CV", comment: "CV")
-        @State var cv_ = ""
-        @State var sd_ = ""
-        @State var CVorSD = ""
-        // Switch between Loops and Errors when tapping in statPanel
-        @State var loopStatTitle = NSLocalizedString("Loops", comment: "Nr of Loops in statPanel")
+        @Environment(\.managedObjectContext) var moc
+        @Environment(\.colorScheme) var colorScheme
+        @Environment(\.sizeCategory) private var fontSize
+
+        @FetchRequest(
+            entity: Override.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)]
+        ) var fetchedPercent: FetchedResults<Override>
+
+        @FetchRequest(
+            entity: OverridePresets.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(
+                format: "name != %@", "" as String
+            )
+        ) var fetchedProfiles: FetchedResults<OverridePresets>
+
+        @FetchRequest(
+            entity: TempTargets.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)]
+        ) var sliderTTpresets: FetchedResults<TempTargets>
+
+        @FetchRequest(
+            entity: TempTargetsSlider.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)]
+        ) var enactedSliderTT: FetchedResults<TempTargetsSlider>
 
         private var numberFormatter: NumberFormatter {
             let formatter = NumberFormatter()
             formatter.numberStyle = .decimal
             formatter.maximumFractionDigits = 2
+            return formatter
+        }
+
+        private var fetchedTargetFormatter: NumberFormatter {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            if state.units == .mmolL {
+                formatter.maximumFractionDigits = 1
+            } else { formatter.maximumFractionDigits = 0 }
             return formatter
         }
 
@@ -59,51 +85,16 @@ extension Home {
             return scene
         }
 
-        @ViewBuilder func header(_ geo: GeometryProxy) -> some View {
-            HStack(alignment: .bottom) {
-                Spacer()
-                cobIobView
-                Spacer()
-                glucoseView
-                Spacer()
-                pumpView
-                Spacer()
-                loopView
-                Spacer()
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.top, geo.safeAreaInsets.top)
-            .padding(.bottom, 6)
-            .background(Color.gray.opacity(0.2))
-        }
-
-        var cobIobView: some View {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Text("IOB").font(.footnote).foregroundColor(.secondary)
-                    Text(
-                        (numberFormatter.string(from: (state.suggestion?.iob ?? 0) as NSNumber) ?? "0") +
-                            NSLocalizedString(" U", comment: "Insulin unit")
-                    )
-                    .font(.footnote).fontWeight(.bold)
-                }.frame(alignment: .top)
-                HStack {
-                    Text("COB").font(.footnote).foregroundColor(.secondary)
-                    Text(
-                        (numberFormatter.string(from: (state.suggestion?.cob ?? 0) as NSNumber) ?? "0") +
-                            NSLocalizedString(" g", comment: "gram of carbs")
-                    )
-                    .font(.footnote).fontWeight(.bold)
-                }.frame(alignment: .bottom)
-            }
-        }
-
         var glucoseView: some View {
             CurrentGlucoseView(
                 recentGlucose: $state.recentGlucose,
+                timerDate: $state.timerDate,
                 delta: $state.glucoseDelta,
                 units: $state.units,
-                alarm: $state.alarm
+                alarm: $state.alarm,
+                lowGlucose: $state.lowGlucose,
+                highGlucose: $state.highGlucose,
+                alwaysUseColors: $state.alwaysUseColors
             )
             .onTapGesture {
                 if state.alarm == nil {
@@ -129,7 +120,8 @@ extension Home {
                 battery: $state.battery,
                 name: $state.pumpName,
                 expiresAtDate: $state.pumpExpiresAtDate,
-                timerDate: $state.timerDate
+                timerDate: $state.timerDate, timeZone: $state.timeZone,
+                state: state
             )
             .onTapGesture {
                 if state.pumpDisplayState != nil {
@@ -147,8 +139,9 @@ extension Home {
                 isLooping: $state.isLooping,
                 lastLoopDate: $state.lastLoopDate,
                 manualTempBasal: $state.manualTempBasal
-            ).onTapGesture {
-                isStatusPopupPresented = true
+            )
+            .onTapGesture {
+                state.isStatusPopupPresented.toggle()
             }.onLongPressGesture {
                 let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
                 impactHeavy.impactOccurred()
@@ -156,392 +149,88 @@ extension Home {
             }
         }
 
-        var infoPanel: some View {
-            HStack(alignment: .center) {
-                if state.pumpSuspended {
-                    Text("Pump suspended")
-                        .font(.system(size: 12, weight: .bold)).foregroundColor(.loopGray)
-                        .padding(.leading, 8)
-                } else if let tempRate = state.tempRate {
-                    if state.apsManager.isManualTempBasal {
-                        Text(
-                            (numberFormatter.string(from: tempRate as NSNumber) ?? "0") +
-                                NSLocalizedString(" U/hr", comment: "Unit per hour with space") +
-                                NSLocalizedString(" -  Manual Basal ⚠️", comment: "Manual Temp basal")
-                        )
-                        .font(.system(size: 12, weight: .bold)).foregroundColor(.insulin)
-                        .padding(.leading, 8)
-                    } else {
-                        Text(
-                            (numberFormatter.string(from: tempRate as NSNumber) ?? "0") +
-                                NSLocalizedString(" U/hr", comment: "Unit per hour with space")
-                        )
-                        .font(.system(size: 12, weight: .bold)).foregroundColor(.insulin)
-                        .padding(.leading, 8)
+        var tempBasalString: String? {
+            guard let tempRate = state.tempRate else {
+                return nil
+            }
+            let rateString = numberFormatter.string(from: tempRate as NSNumber) ?? "0"
+            var manualBasalString = ""
+
+            if state.apsManager.isManualTempBasal {
+                manualBasalString = NSLocalizedString(
+                    " Manual",
+                    comment: "Manual Temp basal"
+                )
+            }
+            return rateString + " " + NSLocalizedString(" U/hr", comment: "Unit per hour with space") + manualBasalString
+        }
+
+        var tempTargetString: String? {
+            guard let tempTarget = state.tempTarget else {
+                return nil
+            }
+            return tempTarget.displayName
+        }
+
+        var info: some View {
+            HStack(spacing: 10) {
+                ZStack {
+                    HStack {
+                        if state.pumpSuspended {
+                            Text("Pump suspended")
+                                .font(.extraSmall).bold().foregroundColor(.loopGray)
+                        } else if let tempBasalString = tempBasalString {
+                            Text(tempBasalString)
+                                .font(.statusFont).bold()
+                                .foregroundColor(.insulin)
+                        }
+                        if state.closedLoop, state.settingsManager.preferences.maxIOB == 0 {
+                            Text("Check Max IOB Setting").font(.extraSmall).foregroundColor(.orange)
+                        }
                     }
                 }
+                .padding(.leading, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-                if let tempTarget = state.tempTarget {
-                    Text(tempTarget.displayName).font(.caption).foregroundColor(.secondary)
-                    if state.units == .mmolL {
-                        Text(
-                            targetFormatter
-                                .string(from: (tempTarget.targetBottom?.asMmolL ?? 0) as NSNumber)!
-                        )
-                        .font(.caption)
+                if let tempTargetString = tempTargetString, !(fetchedPercent.first?.enabled ?? false) {
+                    Text(tempTargetString)
+                        .font(.buttonFont)
                         .foregroundColor(.secondary)
-                        if tempTarget.targetBottom != tempTarget.targetTop {
-                            Text("-").font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(
-                                targetFormatter
-                                    .string(from: (tempTarget.targetTop?.asMmolL ?? 0) as NSNumber)! +
-                                    " \(state.units.rawValue)"
-                            )
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        } else {
-                            Text(state.units.rawValue).font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-
-                    } else {
-                        Text(targetFormatter.string(from: (tempTarget.targetBottom ?? 0) as NSNumber)!)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        if tempTarget.targetBottom != tempTarget.targetTop {
-                            Text("-").font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(
-                                targetFormatter
-                                    .string(from: (tempTarget.targetTop ?? 0) as NSNumber)! + " \(state.units.rawValue)"
-                            )
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        } else {
-                            Text(state.units.rawValue).font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
+                } else {
+                    profileView
                 }
-                Spacer()
-                if let progress = state.bolusProgress {
-                    Text("Bolusing")
-                        .font(.system(size: 12, weight: .bold)).foregroundColor(.insulin)
-                    ProgressView(value: Double(progress))
-                        .progressViewStyle(BolusProgressViewStyle())
-                        .padding(.trailing, 8)
-                        .onTapGesture {
-                            state.cancelBolus()
-                        }
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: 30)
-        }
 
-        @ViewBuilder private func statPanel() -> some View {
-            if state.displayStatistics {
-                VStack(spacing: 8) {
-                    durationButton(states: durationState.allCases, selectedState: $selectedState)
-
-                    switch selectedState {
-                    case .day:
-
-                        let hba1c_all = numberFormatter
-                            .string(from: (state.statistics?.Statistics.HbA1c.total ?? 0) as NSNumber) ?? ""
-                        let average_ = targetFormatter
-                            .string(from: (state.statistics?.Statistics.Glucose.Average.day ?? 0) as NSNumber) ?? ""
-                        let median_ = targetFormatter
-                            .string(from: (state.statistics?.Statistics.Glucose.Median.day ?? 0) as NSNumber) ?? ""
-                        let tir_low = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.Hypos.day ?? 0) as NSNumber) ?? ""
-                        let tir_high = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.Hypers.day ?? 0) as NSNumber) ?? ""
-                        let tir_ = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.TIR.day ?? 0) as NSNumber) ?? ""
-                        let hba1c_ = numberFormatter
-                            .string(from: (state.statistics?.Statistics.HbA1c.day ?? 0) as NSNumber) ?? ""
-                        let sd_ = numberFormatter
-                            .string(from: (state.statistics?.Statistics.Variance.SD.day ?? 0) as NSNumber) ?? ""
-                        let cv_ = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Variance.CV.day ?? 0) as NSNumber) ?? ""
-
-                        averageTIRhca1c(hba1c_all, average_, median_, tir_low, tir_high, tir_, hba1c_, sd_, cv_)
-
-                    case .week:
-                        let hba1c_all = numberFormatter
-                            .string(from: (state.statistics?.Statistics.HbA1c.total ?? 0) as NSNumber) ?? ""
-                        let average_ = targetFormatter
-                            .string(from: (state.statistics?.Statistics.Glucose.Average.week ?? 0) as NSNumber) ?? ""
-                        let median_ = targetFormatter
-                            .string(from: (state.statistics?.Statistics.Glucose.Median.week ?? 0) as NSNumber) ?? ""
-                        let tir_low = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.Hypos.week ?? 0) as NSNumber) ?? ""
-                        let tir_high = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.Hypers.week ?? 0) as NSNumber) ?? ""
-                        let tir_ = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.TIR.week ?? 0) as NSNumber) ?? ""
-                        let hba1c_ = numberFormatter
-                            .string(from: (state.statistics?.Statistics.HbA1c.week ?? 0) as NSNumber) ?? ""
-                        let sd_ = numberFormatter
-                            .string(from: (state.statistics?.Statistics.Variance.SD.week ?? 0) as NSNumber) ?? ""
-                        let cv_ = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Variance.CV.week ?? 0) as NSNumber) ?? ""
-
-                        averageTIRhca1c(hba1c_all, average_, median_, tir_low, tir_high, tir_, hba1c_, sd_, cv_)
-
-                    case .month:
-                        let hba1c_all = numberFormatter
-                            .string(from: (state.statistics?.Statistics.HbA1c.total ?? 0) as NSNumber) ?? ""
-                        let average_ = targetFormatter
-                            .string(from: (state.statistics?.Statistics.Glucose.Average.month ?? 0) as NSNumber) ?? ""
-                        let median_ = targetFormatter
-                            .string(from: (state.statistics?.Statistics.Glucose.Median.month ?? 0) as NSNumber) ?? ""
-                        let tir_low = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.Hypos.month ?? 0) as NSNumber) ?? ""
-                        let tir_high = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.Hypers.month ?? 0) as NSNumber) ?? ""
-                        let tir_ = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.TIR.month ?? 0) as NSNumber) ?? ""
-                        let hba1c_ = numberFormatter
-                            .string(from: (state.statistics?.Statistics.HbA1c.month ?? 0) as NSNumber) ?? ""
-                        let sd_ = numberFormatter
-                            .string(from: (state.statistics?.Statistics.Variance.SD.month ?? 0) as NSNumber) ?? ""
-                        let cv_ = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Variance.CV.month ?? 0) as NSNumber) ?? ""
-
-                        averageTIRhca1c(hba1c_all, average_, median_, tir_low, tir_high, tir_, hba1c_, sd_, cv_)
-
-                    case .total:
-                        let hba1c_all = numberFormatter
-                            .string(from: (state.statistics?.Statistics.HbA1c.total ?? 0) as NSNumber) ?? ""
-                        let average_ = targetFormatter
-                            .string(from: (state.statistics?.Statistics.Glucose.Average.total ?? 0) as NSNumber) ?? ""
-                        let median_ = targetFormatter
-                            .string(from: (state.statistics?.Statistics.Glucose.Median.total ?? 0) as NSNumber) ?? ""
-                        let tir_low = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.Hypos.total ?? 0) as NSNumber) ?? ""
-                        let tir_high = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.Hypers.total ?? 0) as NSNumber) ??
-                            ""
-                        let tir_ = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Distribution.TIR.total ?? 0) as NSNumber) ?? ""
-                        let hba1c_ = numberFormatter
-                            .string(from: (state.statistics?.Statistics.HbA1c.total ?? 0) as NSNumber) ?? ""
-                        let sd_ = numberFormatter
-                            .string(from: (state.statistics?.Statistics.Variance.SD.total ?? 0) as NSNumber) ?? ""
-                        let cv_ = tirFormatter
-                            .string(from: (state.statistics?.Statistics.Variance.CV.total ?? 0) as NSNumber) ?? ""
-
-                        averageTIRhca1c(hba1c_all, average_, median_, tir_low, tir_high, tir_, hba1c_, sd_, cv_)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding([.bottom], 20)
-            }
-        }
-
-        @ViewBuilder private func averageTIRhca1c(
-            _ hba1c_all: String,
-            _ average_: String,
-            _ median_: String,
-            _ tir_low: String,
-            _ tir_high: String,
-            _ tir_: String,
-            _ hba1c_: String,
-            _ sd_: String,
-            _ cv_: String
-        ) -> some View {
-            HStack {
-                Group {
-                    if selectedState != .total {
-                        HStack {
-                            Text("HbA1c").font(.footnote).foregroundColor(.secondary)
-                            Text(hba1c_).font(.footnote)
-                        }
-                    } else {
-                        HStack {
-                            Text(
-                                "\(NSLocalizedString("HbA1c", comment: "")) (\(targetFormatter.string(from: (state.statistics?.GlucoseStorage_Days ?? 0) as NSNumber) ?? "") \(NSLocalizedString("days", comment: "")))"
-                            )
-                            .font(.footnote).foregroundColor(.secondary)
-                            Text(hba1c_all).font(.footnote)
-                        }
-                    }
-                    // Average as default. Changes to Median when clicking.
-                    let textAverageTitle = NSLocalizedString("Average", comment: "")
-                    let textMedianTitle = NSLocalizedString("Median", comment: "")
-                    let cgmReadingsTitle = NSLocalizedString("Readings", comment: "CGM readings in statPanel")
-
-                    HStack {
-                        Text(averageOrMedianTitle).font(.footnote).foregroundColor(.secondary)
-                        if averageOrMedianTitle == textAverageTitle {
-                            Text(averageOrmedian == "" ? average_ : average_).font(.footnote)
-                        } else if averageOrMedianTitle == textMedianTitle {
-                            Text(averageOrmedian == "" ? median_ : median_).font(.footnote)
-                        } else if averageOrMedianTitle == cgmReadingsTitle {
-                            Text(
-                                averageOrmedian != "0" ? tirFormatter
-                                    .string(from: (state.statistics?.Statistics.LoopCycles.readings ?? 0) as NSNumber) ?? "" : ""
-                            )
-                            .font(.footnote)
-                        }
-                    }.onTapGesture {
-                        if averageOrMedianTitle == textAverageTitle {
-                            averageOrMedianTitle = textMedianTitle
-                            averageOrmedian = median_
-                        } else if averageOrMedianTitle == textMedianTitle {
-                            averageOrMedianTitle = cgmReadingsTitle
-                            averageOrmedian = tirFormatter
-                                .string(from: (state.statistics?.Statistics.LoopCycles.readings ?? 0) as NSNumber) ?? ""
-                        } else if averageOrMedianTitle == cgmReadingsTitle {
-                            averageOrMedianTitle = textAverageTitle
-                            averageOrmedian = average_
-                        }
-                    }
-                    .frame(minWidth: 110)
-                    // CV as default. Changes to SD when clicking
-                    let text_CV_Title = NSLocalizedString("CV", comment: "")
-                    let text_SD_Title = NSLocalizedString("SD", comment: "")
-
-                    HStack {
-                        Text(CV_or_SD_Title).font(.footnote).foregroundColor(.secondary)
-                        if CV_or_SD_Title == text_CV_Title {
-                            Text(CVorSD == "" ? cv_ : cv_).font(.footnote)
-                        } else {
-                            Text(CVorSD == "" ? sd_ : sd_).font(.footnote)
-                        }
-                    }.onTapGesture {
-                        if CV_or_SD_Title == text_CV_Title {
-                            CV_or_SD_Title = text_SD_Title
-                            CVorSD = sd_
-                        } else {
-                            CV_or_SD_Title = text_CV_Title
-                            CVorSD = cv_
-                        }
-                    }
-                }
-            }
-            HStack {
-                Group {
-                    HStack {
-                        Text(
-                            NSLocalizedString("Low", comment: " ")
-                        )
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-
-                        Text(tir_low + " %").font(.footnote).foregroundColor(.loopRed)
-                    }
-
-                    HStack {
-                        Text("Normal").font(.footnote).foregroundColor(.secondary)
-                        Text(tir_ + " %").font(.footnote).foregroundColor(.loopGreen)
-                    }
-
-                    HStack {
-                        Text(
-                            NSLocalizedString("High", comment: " ")
-                        )
-                        .font(.footnote).foregroundColor(.secondary)
-
-                        Text(tir_high + " %").font(.footnote).foregroundColor(.loopYellow)
-                    }
-                }
-            }
-
-            if state.settingsManager.preferences.displayLoops {
-                HStack {
-                    Group {
-                        let loopTitle = NSLocalizedString("Loops", comment: "Nr of Loops in statPanel")
-                        let errorTitle = NSLocalizedString("Errors", comment: "Loop Errors in statPanel")
-
-                        HStack {
-                            Text(loopStatTitle).font(.footnote).foregroundColor(.secondary)
-                            Text(
-                                loopStatTitle == loopTitle ? tirFormatter
-                                    .string(from: (state.statistics?.Statistics.LoopCycles.loops ?? 0) as NSNumber) ?? "" :
-                                    tirFormatter
-                                    .string(from: (state.statistics?.Statistics.LoopCycles.errors ?? 0) as NSNumber) ?? ""
-                            ).font(.footnote)
-                        }.onTapGesture {
-                            if loopStatTitle == loopTitle {
-                                loopStatTitle = errorTitle
-                            } else if loopStatTitle == errorTitle {
-                                loopStatTitle = loopTitle
-                            }
-                        }
-
-                        HStack {
-                            Text("Interval").font(.footnote)
-                                .foregroundColor(.secondary)
-                            Text(
-                                targetFormatter
-                                    .string(from: (state.statistics?.Statistics.LoopCycles.avg_interval ?? 0) as NSNumber) ??
-                                    ""
-                            ).font(.footnote)
-                        }
-
-                        HStack {
-                            Text("Duration").font(.footnote)
-                                .foregroundColor(.secondary)
-                            Text(
-                                numberFormatter
-                                    .string(
-                                        from: (state.statistics?.Statistics.LoopCycles.median_duration ?? 0) as NSNumber
-                                    ) ?? ""
-                            ).font(.footnote)
-                        }
-                    }
-                }
-            }
-        }
-
-        var legendPanel: some View {
-            ZStack {
-                HStack(alignment: .center) {
-                    Group {
-                        Circle().fill(Color.loopGreen).frame(width: 8, height: 8)
-                        Text("BG")
-                            .font(.system(size: 12, weight: .bold)).foregroundColor(.loopGreen)
-                    }
-                    Group {
-                        Circle().fill(Color.insulin).frame(width: 8, height: 8)
-                            .padding(.leading, 8)
-                        Text("IOB")
-                            .font(.system(size: 12, weight: .bold)).foregroundColor(.insulin)
-                    }
-                    Group {
-                        Circle().fill(Color.zt).frame(width: 8, height: 8)
-                            .padding(.leading, 8)
-                        Text("ZT")
-                            .font(.system(size: 12, weight: .bold)).foregroundColor(.zt)
-                    }
-                    Group {
-                        Circle().fill(Color.loopYellow).frame(width: 8, height: 8)
-                            .padding(.leading, 8)
-                        Text("COB")
-                            .font(.system(size: 12, weight: .bold)).foregroundColor(.loopYellow)
-                    }
-                    Group {
-                        Circle().fill(Color.uam).frame(width: 8, height: 8)
-                            .padding(.leading, 8)
-                        Text("UAM")
-                            .font(.system(size: 12, weight: .bold)).foregroundColor(.uam)
-                    }
-
+                ZStack {
                     if let eventualBG = state.eventualBG {
-                        Text(
-                            "⇢ " + numberFormatter.string(
-                                from: (state.units == .mmolL ? eventualBG.asMmolL : Decimal(eventualBG)) as NSNumber
-                            )!
-                        )
-                        .font(.system(size: 12, weight: .bold)).foregroundColor(.secondary)
+                        HStack {
+                            Text("⇢").font(.statusFont).foregroundStyle(.secondary)
+
+                            // Image(systemName: "arrow.forward")
+                            Text(
+                                fetchedTargetFormatter.string(
+                                    from: (state.units == .mmolL ? eventualBG.asMmolL : Decimal(eventualBG)) as NSNumber
+                                )!
+                            ).font(.statusFont).foregroundColor(colorScheme == .dark ? .white : .black)
+                            Text(state.units.rawValue).font(.system(size: 12)).foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.trailing, 8)
                     }
                 }
-                .frame(maxWidth: .infinity)
-                .padding([.bottom], 20)
-            }
+            }.dynamicTypeSize(...DynamicTypeSize.xxLarge)
+        }
+
+        var infoPanel: some View {
+            /* addBackground()
+             .frame(minHeight: 40, maxHeight: 40)
+             .overlay { */
+            info
+                .frame(minHeight: 35, maxHeight: 35)
+            /* }
+                 .clipShape(RoundedRectangle(cornerRadius: 15))
+                 .addShadows()
+                 .padding(.horizontal, 10)
+             // .background(colorScheme == .light ? .gray.opacity(0.1) : .white.opacity(0.05)) */
         }
 
         var mainChart: some View {
@@ -551,14 +240,14 @@ extension Home {
                         .ignoresSafeArea()
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                 }
-
                 MainChartView(
                     glucose: $state.glucose,
+                    isManual: $state.isManual,
                     suggestion: $state.suggestion,
-                    statistcs: $state.statistics,
                     tempBasals: $state.tempBasals,
                     boluses: $state.boluses,
                     suspensions: $state.suspensions,
+                    announcement: $state.announcement,
                     hours: .constant(state.filteredHours),
                     maxBasal: $state.maxBasal,
                     autotunedBasalProfile: $state.autotunedBasalProfile,
@@ -567,27 +256,54 @@ extension Home {
                     carbs: $state.carbs,
                     timerDate: $state.timerDate,
                     units: $state.units,
-                    smooth: $state.smooth
+                    smooth: $state.smooth,
+                    highGlucose: $state.highGlucose,
+                    lowGlucose: $state.lowGlucose,
+                    screenHours: $state.hours,
+                    displayXgridLines: $state.displayXgridLines,
+                    displayYgridLines: $state.displayYgridLines,
+                    thresholdLines: $state.thresholdLines,
+                    triggerUpdate: $triggerUpdate,
+                    overrideHistory: $state.overrideHistory,
+                    minimumSMB: $state.minimumSMB,
+                    maxBolus: $state.maxBolus,
+                    maxBolusValue: $state.maxBolusValue, useInsulinBars: $state.useInsulinBars
                 )
             }
-            .padding(.bottom)
+            .padding(.bottom, 5)
             .modal(for: .dataTable, from: self)
         }
 
-        @ViewBuilder private func bottomPanel(_ geo: GeometryProxy) -> some View {
+        @ViewBuilder private func buttonPanel(_ geo: GeometryProxy) -> some View {
             ZStack {
-                Rectangle().fill(Color.gray.opacity(0.2)).frame(height: 50 + geo.safeAreaInsets.bottom)
-
+                addHeaderBackground()
+                    .frame(height: 50 + geo.safeAreaInsets.bottom)
+                let isOverride = fetchedPercent.first?.enabled ?? false
+                let isTarget = (state.tempTarget != nil)
                 HStack {
-                    Button { state.showModal(for: .addCarbs) }
+                    Button { state.showModal(for: .dataTable) }
+                    label: {
+                        ZStack(alignment: Alignment(horizontal: .leading, vertical: .bottom)) {
+                            Image(systemName: "book")
+                                .symbolRenderingMode(.hierarchical)
+                                .resizable()
+                                .frame(
+                                    width: IAPSconfig.buttonSize * 0.9,
+                                    height: IAPSconfig.buttonSize
+                                )
+                                .foregroundColor(.gray)
+                        }
+                    }.buttonStyle(.borderless)
+                    Spacer()
+                    Button { state.showModal(for: .addCarbs(editMode: false, override: false)) }
                     label: {
                         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .bottom)) {
-                            Image("carbs")
+                            Image(systemName: "fork.knife")
                                 .renderingMode(.template)
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundColor(.loopYellow)
+                                .font(.custom("Buttons", size: 24))
+                                .foregroundColor(colorScheme == .dark ? .loopYellow : .orange)
                                 .padding(8)
+                                .foregroundColor(.loopYellow)
                             if let carbsReq = state.carbsRequired {
                                 Text(numberFormatter.string(from: carbsReq as NSNumber)!)
                                     .font(.caption)
@@ -596,25 +312,61 @@ extension Home {
                                     .background(Capsule().fill(Color.red))
                             }
                         }
+                    }.buttonStyle(.borderless)
+                    Spacer()
+                    ZStack(alignment: Alignment(horizontal: .trailing, vertical: .bottom)) {
+                        Image(systemName: isOverride ? "person.fill" : "person")
+                            .symbolRenderingMode(.palette)
+                            .font(.custom("Buttons", size: 28))
+                            .foregroundStyle(.purple)
+                            .padding(8)
+                            .background(isOverride ? .purple.opacity(0.15) : .clear)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .onTapGesture {
+                        if isOverride {
+                            showCancelAlert.toggle()
+                        } else {
+                            state.showModal(for: .overrideProfilesConfig)
+                        }
+                    }
+                    .onLongPressGesture {
+                        state.showModal(for: .overrideProfilesConfig)
+                    }
+                    if state.useTargetButton {
+                        Spacer()
+                        Image(systemName: "target")
+                            .renderingMode(.template)
+                            .font(.custom("Buttons", size: 24))
+                            .padding(8)
+                            .foregroundColor(.loopGreen)
+                            .background(isTarget ? .green.opacity(0.15) : .clear)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .onTapGesture {
+                                if isTarget {
+                                    showCancelTTAlert.toggle()
+                                } else {
+                                    state.showModal(for: .addTempTarget)
+                                }
+                            }
+                            .onLongPressGesture {
+                                state.showModal(for: .addTempTarget)
+                            }
                     }
                     Spacer()
-                    Button { state.showModal(for: .addTempTarget) }
+                    Button {
+                        state.showModal(for: .bolus(
+                            waitForSuggestion: state.useCalc ? true : false,
+                            fetch: false
+                        ))
+                    }
                     label: {
-                        Image("target")
+                        Image(systemName: "syringe")
                             .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .padding(8)
-                    }.foregroundColor(.loopGreen)
-                    Spacer()
-                    Button { state.showModal(for: .bolus(waitForSuggestion: false)) }
-                    label: {
-                        Image("bolus")
-                            .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .padding(8)
-                    }.foregroundColor(.insulin)
+                            .font(.custom("Buttons", size: 24))
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundColor(.insulin)
                     Spacer()
                     if state.allowManualTemp {
                         Button { state.showModal(for: .manualTempBasal) }
@@ -622,82 +374,342 @@ extension Home {
                             Image("bolus1")
                                 .renderingMode(.template)
                                 .resizable()
-                                .frame(width: 24, height: 24)
-                                .padding(8)
-                        }.foregroundColor(.insulin)
+                                .frame(width: IAPSconfig.buttonSize, height: IAPSconfig.buttonSize, alignment: .bottom)
+                        }
+                        .foregroundColor(.insulin)
                         Spacer()
                     }
                     Button { state.showModal(for: .settings) }
                     label: {
-                        Image("settings1")
+                        Image(systemName: "gear")
                             .renderingMode(.template)
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .padding(8)
-                    }.foregroundColor(.loopGray)
+                            .font(.custom("Buttons", size: 24))
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundColor(.gray)
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, state.allowManualTemp ? 5 : 24)
                 .padding(.bottom, geo.safeAreaInsets.bottom)
             }
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+            .confirmationDialog("Cancel Profile Override", isPresented: $showCancelAlert) {
+                Button("Cancel Profile Override", role: .destructive) {
+                    state.cancelProfile()
+                    triggerUpdate.toggle()
+                }
+            }
+            .confirmationDialog("Cancel Temporary Target", isPresented: $showCancelTTAlert) {
+                Button("Cancel Temporary Target", role: .destructive) {
+                    state.cancelTempTarget()
+                }
+            }
+        }
+
+        var chart: some View {
+            addColouredBackground()
+                .overlay {
+                    VStack(spacing: 0) {
+                        infoPanel
+                        mainChart
+                        if state.timeSettings {
+                            timeSetting
+                        }
+                    }
+                }
+                .frame(
+                    minHeight: UIScreen.main.bounds
+                        .height / (state.timeSettings ? 1.50 : fontSize < .extraExtraLarge ? 1.46 : 1.49)
+                )
+        }
+
+        var carbsAndInsulinView: some View {
+            HStack {
+                if let settings = state.settingsManager {
+                    let opacity: CGFloat = colorScheme == .dark ? 0.2 : 0.6
+                    let materialOpacity: CGFloat = colorScheme == .dark ? 0.25 : 0.10
+                    HStack {
+                        let substance = Double(state.suggestion?.cob ?? 0)
+                        let max = max(Double(settings.preferences.maxCOB), 1)
+                        let fraction: Double = 1 - (substance / max)
+                        let fill = CGFloat(min(Swift.max(fraction, 0.05), substance > 0 ? 0.92 : 0.97))
+                        TestTube(
+                            opacity: opacity,
+                            amount: fill,
+                            colourOfSubstance: .loopYellow,
+                            materialOpacity: materialOpacity
+                        )
+                        .frame(width: 12, height: 38)
+                        .offset(x: 0, y: -5)
+                        HStack(spacing: 0) {
+                            Text(
+                                numberFormatter.string(from: (state.suggestion?.cob ?? 0) as NSNumber) ?? "0"
+                            ).font(.statusFont).bold()
+                            Text(NSLocalizedString(" g", comment: "gram of carbs")).font(.statusFont).foregroundStyle(.secondary)
+                        }.offset(x: 0, y: 5)
+                    }
+                    HStack {
+                        let substance = Double(state.suggestion?.iob ?? 0)
+                        let max = max(Double(settings.preferences.maxIOB), 1)
+                        let fraction: Double = 1 - (substance / max)
+                        let fill = CGFloat(min(Swift.max(fraction, 0.05), substance > 0 ? 0.92 : 0.98))
+                        TestTube(
+                            opacity: opacity,
+                            amount: fill,
+                            colourOfSubstance: substance < 0 ? .red : .insulin,
+                            materialOpacity: materialOpacity
+                        )
+                        .frame(width: 12, height: 38)
+                        .offset(x: 0, y: -5)
+                        HStack(spacing: 0) {
+                            Text(
+                                numberFormatter.string(from: (state.suggestion?.iob ?? 0) as NSNumber) ?? "0"
+                            ).font(.statusFont).bold()
+                            Text(NSLocalizedString(" U", comment: "Insulin unit")).font(.statusFont).foregroundStyle(.secondary)
+                        }.offset(x: 0, y: 5)
+                    }
+                }
+            }
+        }
+
+        var preview: some View {
+            addBackground()
+                .frame(minHeight: 200)
+                .overlay {
+                    PreviewChart(readings: $state.readings, lowLimit: $state.lowGlucose, highLimit: $state.highGlucose)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .addShadows()
+                .padding(.horizontal, 10)
+                .onTapGesture {
+                    state.showModal(for: .statistics)
+                }
+        }
+
+        var activeIOBView: some View {
+            addBackground()
+                .frame(minHeight: 340)
+                .overlay {
+                    ActiveIOBView(data: $state.iobData, neg: $state.neg, tddChange: $state.tddChange)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .addShadows()
+                .padding(.horizontal, 10)
+        }
+
+        var activeCOBView: some View {
+            addBackground()
+                .frame(minHeight: 250)
+                .overlay {
+                    ActiveCOBView(data: $state.iobData)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .addShadows()
+                .padding(.horizontal, 10)
+        }
+
+        var loopPreview: some View {
+            addBackground()
+                .frame(minHeight: 190)
+                .overlay {
+                    LoopsView(loopStatistics: $state.loopStatistics)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .addShadows()
+                .padding(.horizontal, 10)
+                .onTapGesture {
+                    state.showModal(for: .statistics)
+                }
+        }
+
+        var profileView: some View {
+            HStack(spacing: 0) {
+                if let override = fetchedPercent.first {
+                    if override.enabled {
+                        if override.isPreset {
+                            let profile = fetchedProfiles.first(where: { $0.id == override.id })
+                            if let currentProfile = profile {
+                                if let name = currentProfile.name, name != "EMPTY", name.nonEmpty != nil, name != "",
+                                   name != "\u{0022}\u{0022}"
+                                {
+                                    if name.count > 15 {
+                                        let shortened = name.prefix(15)
+                                        Text(shortened).font(.statusFont).foregroundStyle(.secondary)
+                                    } else {
+                                        Text(name).font(.statusFont).foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                        } else if override.percentage != 100 {
+                            Text(override.percentage.formatted() + " %").font(.statusFont).foregroundStyle(.secondary)
+                        } else if override.smbIsOff, !override.smbIsAlwaysOff {
+                            Text("No ").font(.statusFont).foregroundStyle(.secondary) // "No" as in no SMBs
+                            Image(systemName: "syringe")
+                                .font(.previewNormal).foregroundStyle(.secondary)
+                        } else if override.smbIsOff {
+                            Image(systemName: "clock").font(.statusFont).foregroundStyle(.secondary)
+                            Image(systemName: "syringe")
+                                .font(.previewNormal).foregroundStyle(.secondary)
+                        } else {
+                            Text("Override").font(.statusFont).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+        }
+
+        func bolusProgressView(progress: Decimal, amount: Decimal) -> some View {
+            ZStack {
+                HStack {
+                    VStack {
+                        HStack {
+                            Text("Bolusing")
+                                .foregroundColor(.primary).font(.bolusProgressFont)
+                            let bolused = targetFormatter.string(from: (amount * progress) as NSNumber) ?? ""
+
+                            Text(
+                                bolused + " " + NSLocalizedString("of", comment: "") + " " + amount
+                                    .formatted() + NSLocalizedString(" U", comment: "")
+                            ).font(.bolusProgressBarFont)
+                        }
+                        ProgressView(value: Double(progress))
+                            .progressViewStyle(BolusProgressViewStyle())
+                    }
+                    Image(systemName: "xmark.square.fill")
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.white, .blue)
+                        .font(.bolusProgressStopFont)
+                        .onTapGesture { state.cancelBolus() }
+                        .offset(x: 10, y: 0)
+                }
+            }
+        }
+
+        @ViewBuilder private func headerView(_ geo: GeometryProxy) -> some View {
+            addHeaderBackground()
+                .frame(
+                    maxHeight: fontSize < .extraExtraLarge ? 125 + geo.safeAreaInsets.top : 135 + geo.safeAreaInsets.top
+                )
+                .overlay {
+                    VStack {
+                        ZStack {
+                            glucoseView.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top).padding(.top, 10)
+                            HStack {
+                                carbsAndInsulinView
+                                    .frame(maxHeight: .infinity, alignment: .bottom)
+                                Spacer()
+                                loopView.frame(maxHeight: .infinity, alignment: .bottom).padding(.bottom, 3)
+                                    .offset(x: -2, y: 0) // To do: Remove all offsets, if possible.
+                                Spacer()
+                                pumpView
+                                    .frame(maxHeight: .infinity, alignment: .bottom)
+                                    .padding(.bottom, 2)
+                            }
+                            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+                            .padding(.horizontal, 10)
+                        }
+                    }.padding(.top, geo.safeAreaInsets.top).padding(.bottom, colorScheme == .dark ? 0 : 10)
+                }
+                .clipShape(Rectangle())
+        }
+
+        var timeSetting: some View {
+            let string = "\(state.hours) " + NSLocalizedString("hours", comment: "") + "   "
+            return Menu(string) {
+                Button("3 " + NSLocalizedString("hours", comment: ""), action: { state.hours = 3 })
+                Button("6 " + NSLocalizedString("hours", comment: ""), action: { state.hours = 6 })
+                Button("12 " + NSLocalizedString("hours", comment: ""), action: { state.hours = 12 })
+                Button("24 " + NSLocalizedString("hours", comment: ""), action: { state.hours = 24 })
+                Button("UI/UX Settings", action: { state.showModal(for: .statisticsConfig) })
+            }
+            .buttonStyle(.borderless)
+            .foregroundStyle(.secondary)
+            .font(.timeSettingFont)
+            .padding(.vertical, 15)
+            .background(TimeEllipse(characters: string.count))
         }
 
         var body: some View {
             GeometryReader { geo in
-                VStack(spacing: 0) {
-                    header(geo)
-                    infoPanel
-                    mainChart
-                    legendPanel
-                    statPanel()
-                    bottomPanel(geo)
+                VStack {
+                    headerView(geo)
+                    ScrollView {
+                        chart
+                        preview.padding(.top, 15)
+                        loopPreview.padding(.top, 15)
+                        if state.iobData.count > 5 {
+                            activeCOBView.padding(.top, 15)
+                            activeIOBView.padding(.top, 15)
+                        }
+                    }
+                    .scrollIndicators(.hidden)
+                    buttonPanel(geo)
                 }
-                .edgesIgnoringSafeArea(.vertical)
+                .background(
+                    colorScheme == .light ? .gray.opacity(IAPSconfig.backgroundOpacity * 2) : .white
+                        .opacity(IAPSconfig.backgroundOpacity * 2)
+                )
+                .ignoresSafeArea(edges: .vertical)
+                .overlay {
+                    if let progress = state.bolusProgress, let amount = state.bolusAmount {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(.gray.opacity(0.8))
+                                .frame(width: 320, height: 60)
+                            bolusProgressView(progress: progress, amount: amount)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .offset(x: 0, y: -100)
+                    }
+                }
             }
             .onAppear(perform: configureView)
             .navigationTitle("Home")
             .navigationBarHidden(true)
             .ignoresSafeArea(.keyboard)
-            .popup(isPresented: isStatusPopupPresented, alignment: .top, direction: .top) {
+            .popup(isPresented: state.isStatusPopupPresented, alignment: .bottom, direction: .bottom) {
                 popup
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(Color(UIColor.darkGray))
+                            .fill(Color.popUpGray)
                     )
                     .onTapGesture {
-                        isStatusPopupPresented = false
+                        state.isStatusPopupPresented = false
                     }
                     .gesture(
                         DragGesture(minimumDistance: 10, coordinateSpace: .local)
                             .onEnded { value in
                                 if value.translation.height < 0 {
-                                    isStatusPopupPresented = false
+                                    state.isStatusPopupPresented = false
                                 }
                             }
                     )
             }
+            .onAppear(perform: configureView)
         }
 
         private var popup: some View {
             VStack(alignment: .leading, spacing: 4) {
-                Text(state.statusTitle).font(.headline).foregroundColor(.white)
+                Text(state.statusTitle).font(.suggestionHeadline).foregroundColor(.white)
                     .padding(.bottom, 4)
                 if let suggestion = state.suggestion {
                     TagCloudView(tags: suggestion.reasonParts).animation(.none, value: false)
 
-                    Text(suggestion.reasonConclusion.capitalizingFirstLetter()).font(.caption).foregroundColor(.white)
-
+                    Text(suggestion.reasonConclusion.capitalizingFirstLetter()).font(.suggestionSmallParts)
+                        .foregroundColor(.white)
                 } else {
-                    Text("No sugestion found").font(.body).foregroundColor(.white)
+                    Text("No sugestion found").font(.suggestionHeadline).foregroundColor(.white)
                 }
-
                 if let errorMessage = state.errorMessage, let date = state.errorDate {
                     Text(NSLocalizedString("Error at", comment: "") + " " + dateFormatter.string(from: date))
                         .foregroundColor(.white)
-                        .font(.headline)
+                        .font(.suggestionError)
                         .padding(.bottom, 4)
                         .padding(.top, 8)
-                    Text(errorMessage).font(.caption).foregroundColor(.loopRed)
+                    Text(errorMessage).font(.buttonFont).foregroundColor(.loopRed)
+                } else if let suggestion = state.suggestion, (suggestion.bg ?? 100) == 400 {
+                    Text("Invalid CGM reading (HIGH).").font(.suggestionError).bold().foregroundColor(.loopRed).padding(.top, 8)
+                    Text("SMBs and High Temps Disabled.").font(.suggestionParts).foregroundColor(.white).padding(.bottom, 4)
                 }
             }
         }

@@ -5,6 +5,7 @@ extension AutotuneConfig {
     struct RootView: BaseView {
         let resolver: Resolver
         @StateObject var state = StateModel()
+        @State var replaceAlert = false
 
         private var isfFormatter: NumberFormatter {
             let formatter = NumberFormatter()
@@ -31,6 +32,9 @@ extension AutotuneConfig {
             Form {
                 Section {
                     Toggle("Use Autotune", isOn: $state.useAutotune)
+                    if state.useAutotune {
+                        Toggle("Only Autotune Basal Insulin", isOn: $state.onlyAutotuneBasals)
+                    }
                 }
 
                 Section {
@@ -44,22 +48,24 @@ extension AutotuneConfig {
                 }
 
                 if let autotune = state.autotune {
-                    Section {
-                        HStack {
-                            Text("Carb ratio")
-                            Spacer()
-                            Text(isfFormatter.string(from: autotune.carbRatio as NSNumber) ?? "0")
-                            Text("g/U").foregroundColor(.secondary)
-                        }
-                        HStack {
-                            Text("Sensitivity")
-                            Spacer()
-                            if state.units == .mmolL {
-                                Text(isfFormatter.string(from: autotune.sensitivity.asMmolL as NSNumber) ?? "0")
-                            } else {
-                                Text(isfFormatter.string(from: autotune.sensitivity as NSNumber) ?? "0")
+                    if !state.onlyAutotuneBasals {
+                        Section {
+                            HStack {
+                                Text("Carb ratio")
+                                Spacer()
+                                Text(isfFormatter.string(from: autotune.carbRatio as NSNumber) ?? "0")
+                                Text("g/U").foregroundColor(.secondary)
                             }
-                            Text(state.units.rawValue + "/U").foregroundColor(.secondary)
+                            HStack {
+                                Text("Sensitivity")
+                                Spacer()
+                                if state.units == .mmolL {
+                                    Text(isfFormatter.string(from: autotune.sensitivity.asMmolL as NSNumber) ?? "0")
+                                } else {
+                                    Text(isfFormatter.string(from: autotune.sensitivity as NSNumber) ?? "0")
+                                }
+                                Text(state.units.rawValue + "/U").foregroundColor(.secondary)
+                            }
                         }
                     }
 
@@ -89,11 +95,29 @@ extension AutotuneConfig {
                         label: { Text("Delete autotune data") }
                             .foregroundColor(.red)
                     }
+
+                    /*
+                     Section {
+                         Button {
+                             replaceAlert = true
+                         }
+                         label: { Text("Save as your Normal Basal Rates") }
+                     } header: {
+                         Text("Save on Pump")
+                     }*/
                 }
             }
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .onAppear(perform: configureView)
             .navigationTitle("Autotune")
             .navigationBarTitleDisplayMode(.automatic)
+            .alert(Text("Are you sure?"), isPresented: $replaceAlert) {
+                Button("Yes", action: {
+                    state.replace()
+                    replaceAlert.toggle()
+                })
+                Button("No", action: { replaceAlert.toggle() })
+            }
         }
     }
 }

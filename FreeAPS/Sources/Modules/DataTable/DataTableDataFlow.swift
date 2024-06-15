@@ -65,11 +65,21 @@ enum DataTable {
         let duration: Decimal?
         let isFPU: Bool?
         let fpuID: String?
+        let note: String?
+        let isSMB: Bool?
+        let isExternal: Bool?
 
-        private var numberFormater: NumberFormatter {
+        private var numberFormatter: NumberFormatter {
             let formatter = NumberFormatter()
             formatter.numberStyle = .decimal
             formatter.maximumFractionDigits = 2
+            return formatter
+        }
+
+        private var tempTargetFormater: NumberFormatter {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.maximumFractionDigits = 1
             return formatter
         }
 
@@ -82,8 +92,11 @@ enum DataTable {
             duration: Decimal? = nil,
             id: String? = nil,
             idPumpEvent: String? = nil,
-            isFPU: Bool? = false,
-            fpuID: String? = nil
+            isFPU: Bool? = nil,
+            fpuID: String? = nil,
+            note: String? = nil,
+            isSMB: Bool? = nil,
+            isExternal: Bool? = nil
         ) {
             self.units = units
             self.type = type
@@ -95,6 +108,9 @@ enum DataTable {
             self.idPumpEvent = idPumpEvent
             self.isFPU = isFPU
             self.fpuID = fpuID
+            self.note = note
+            self.isSMB = isSMB
+            self.isExternal = isExternal
         }
 
         static func == (lhs: Treatment, rhs: Treatment) -> Bool {
@@ -116,14 +132,24 @@ enum DataTable {
 
             switch type {
             case .carbs:
-                return numberFormater.string(from: amount as NSNumber)! + NSLocalizedString(" g", comment: "gram of carbs")
+                return numberFormatter
+                    .string(from: amount as NSNumber)! + NSLocalizedString(" g", comment: "gram of carbs")
             case .fpus:
-                return numberFormater
+                return numberFormatter
                     .string(from: amount as NSNumber)! + NSLocalizedString(" g", comment: "gram of carb equilvalents")
             case .bolus:
-                return numberFormater.string(from: amount as NSNumber)! + NSLocalizedString(" U", comment: "Insulin unit")
+                var bolusText = " "
+                if isSMB ?? false {}
+                else if isExternal ?? false {
+                    bolusText += NSLocalizedString("External", comment: "External Insulin")
+                } else {
+                    bolusText += NSLocalizedString("Manual", comment: "Manual Bolus")
+                }
+
+                return numberFormatter
+                    .string(from: amount as NSNumber)! + NSLocalizedString(" U", comment: "Insulin unit") + bolusText
             case .tempBasal:
-                return numberFormater
+                return numberFormatter
                     .string(from: amount as NSNumber)! + NSLocalizedString(" U/hr", comment: "Unit insulin per hour")
             case .tempTarget:
                 var converted = amount
@@ -132,13 +158,13 @@ enum DataTable {
                 }
 
                 guard var secondAmount = secondAmount else {
-                    return numberFormater.string(from: converted as NSNumber)! + " \(units.rawValue)"
+                    return numberFormatter.string(from: converted as NSNumber)! + " \(units.rawValue)"
                 }
                 if units == .mmolL {
                     secondAmount = secondAmount.asMmolL
                 }
 
-                return numberFormater.string(from: converted as NSNumber)! + " - " + numberFormater
+                return tempTargetFormater.string(from: converted as NSNumber)! + " - " + tempTargetFormater
                     .string(from: secondAmount as NSNumber)! + " \(units.rawValue)"
             case .resume,
                  .suspend:
@@ -151,11 +177,11 @@ enum DataTable {
             case .carbs:
                 return .loopYellow
             case .fpus:
-                return .red
+                return .orange.opacity(0.5)
             case .bolus:
-                return .insulin
+                return Color.insulin
             case .tempBasal:
-                return Color.insulin.opacity(0.5)
+                return Color.insulin.opacity(0.4)
             case .resume,
                  .suspend,
                  .tempTarget:
@@ -167,7 +193,7 @@ enum DataTable {
             guard let duration = duration, duration > 0 else {
                 return nil
             }
-            return numberFormater.string(from: duration as NSNumber)! + " min"
+            return numberFormatter.string(from: duration as NSNumber)! + " min"
         }
     }
 

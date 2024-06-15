@@ -5,8 +5,10 @@ extension Bolus {
     struct RootView: BaseView {
         let resolver: Resolver
         let waitForSuggestion: Bool
+        let fetch: Bool
         @StateObject var state = StateModel()
-        @State private var isAddInsulinAlertPresented = false
+
+        @State private var keepForNextWiew: Bool = false
 
         private var formatter: NumberFormatter {
             let formatter = NumberFormatter()
@@ -15,99 +17,146 @@ extension Bolus {
             return formatter
         }
 
+        @FetchRequest(
+            entity: Meals.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "createdAt", ascending: false)]
+        ) var meal: FetchedResults<Meals>
+
         var body: some View {
+            if state.useCalc {
+                if state.eventualBG {
+                    DefaultBolusCalcRootView(
+                        resolver: resolver,
+                        waitForSuggestion: waitForSuggestion,
+                        fetch: fetch,
+                        state: state,
+                        meal: meal,
+                        mealEntries: mealEntries
+                    )
+                } else {
+                    AlternativeBolusCalcRootView(
+                        resolver: resolver,
+                        waitForSuggestion: waitForSuggestion,
+                        fetch: fetch,
+                        state: state,
+                        meal: meal,
+                        mealEntries: mealEntries
+                    )
+                }
+            } else {
+                cleanBolusView
+            }
+        }
+
+        private var cleanBolusView: some View {
             Form {
-                Section(header: Text("Recommendation")) {
-                    if state.waitForSuggestion {
-                        HStack {
-                            Text("Wait please").foregroundColor(.secondary)
-                            Spacer()
-                            ActivityIndicator(isAnimating: .constant(true), style: .medium) // fix iOS 15 bug
+                if fetch {
+                    Section {
+                        mealEntries
+                    } header: { Text("Meal Summary") }
+                }
+
+                Section {
+                    HStack {
+                        Text("Amount")
+                        Spacer()
+                        DecimalTextField(
+                            "0",
+                            value: $state.amount,
+                            formatter: formatter,
+                            cleanInput: true,
+                            useButtons: false
+                        )
+                        Text(!(state.amount > state.maxBolus) ? "U" : "😵").foregroundColor(.secondary)
+                    }
+                } header: { Text("Bolus") }
+
+                Section {
+                    if state.amount > 0 {
+                        Button {
+                            state.add()
+                            keepForNextWiew = true
                         }
+                        label: { Text(!(state.amount > state.maxBolus) ? "Enact bolus" : "Max Bolus exceeded!") }
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .disabled(state.amount > state.maxBolus)
+                            .listRowBackground((state.amount <= state.maxBolus) ? Color(.systemBlue) : Color(.systemGray4))
+                            .tint(.white)
                     } else {
-                        HStack {
-                            Text("Insulin required").foregroundColor(.secondary)
-                            Spacer()
-                            Text(
-                                formatter
-                                    .string(from: state.insulinRequired as NSNumber)! +
-                                    NSLocalizedString(" U", comment: "Insulin unit")
-                            ).foregroundColor(.secondary)
-                        }.contentShape(Rectangle())
-                            .onTapGesture {
-                                state.amount = state.insulinRequired
-                            }
-                        HStack {
-                            Text("Insulin recommended")
-                            Spacer()
-                            Text(
-                                formatter
-                                    .string(from: state.insulinRecommended as NSNumber)! +
-                                    NSLocalizedString(" U", comment: "Insulin unit")
-                            ).foregroundColor(.secondary)
-                        }.contentShape(Rectangle())
-                            .onTapGesture {
-                                state.amount = state.insulinRecommended
-                            }
-                    }
-                }
-
-                if !state.waitForSuggestion {
-                    Section(header: Text("Bolus")) {
-                        HStack {
-                            Text("Amount")
-                            Spacer()
-                            DecimalTextField(
-                                "0",
-                                value: $state.amount,
-                                formatter: formatter,
-                                autofocus: true,
-                                cleanInput: true
-                            )
-                            Text("U").foregroundColor(.secondary)
+                        Button {
+                            state.hideModal()
+                            keepForNextWiew = true
                         }
-                    }
-
-                    Section {
-                        Button { state.add() }
-                        label: { Text("Enact bolus") }
-                            .disabled(state.amount <= 0)
-                    }
-
-                    Section {
-                        if waitForSuggestion {
-                            Button { state.showModal(for: nil) }
-                            label: { Text("Continue without bolus") }
-                        } else {
-                            Button { isAddInsulinAlertPresented = true }
-                            label: { Text("Add insulin without actually bolusing") }
-                                .disabled(state.amount <= 0)
+                        label: {
+                            Text("Continue without bolus")
+                                .frame(maxWidth: .infinity, alignment: .center)
                         }
                     }
                 }
             }
-            .alert(isPresented: $isAddInsulinAlertPresented) {
-                let amount = formatter
-                    .string(from: state.amount as NSNumber)! + NSLocalizedString(" U", comment: "Insulin unit")
-                return Alert(
-                    title: Text("Are you sure?"),
-                    message: Text("Add \(amount) without bolusing"),
-                    primaryButton: .destructive(
-                        Text("Add"),
-                        action: { state.addWithoutBolus() }
-                    ),
-                    secondaryButton: .cancel()
-                )
-            }
-            .onAppear {
-                configureView {
-                    state.waitForSuggestionInitial = waitForSuggestion
-                    state.waitForSuggestion = waitForSuggestion
+            .onDisappear {
+                if fetch, hasFatOrProtein, !keepForNextWiew, !state.useCalc {
+                    state.delete(deleteTwice: true, meal: meal)
+                } else if fetch, !keepForNextWiew, !state.useCalc {
+                    state.delete(deleteTwice: false, meal: meal)
                 }
             }
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .navigationTitle("Enact Bolus")
-            .navigationBarTitleDisplayMode(.automatic)
-            .navigationBarItems(leading: Button("Close", action: state.hideModal))
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(
+                leading: Button {
+                    keepForNextWiew = state.carbsView(fetch: fetch, hasFatOrProtein: hasFatOrProtein, mealSummary: meal)
+                }
+                label: {
+                    HStack {
+                        Image(systemName: "chevron.backward")
+                        Text("Meal")
+                    }
+                },
+                trailing: Button { state.hideModal() }
+                label: { Text("Cancel") }
+            )
+        }
+
+        private var hasFatOrProtein: Bool {
+            ((meal.first?.fat ?? 0) > 0) || ((meal.first?.protein ?? 0) > 0)
+        }
+
+        private var mealEntries: some View {
+            VStack {
+                if let carbs = meal.first?.carbs, carbs > 0 {
+                    HStack {
+                        Text("Carbs")
+                        Spacer()
+                        Text(carbs.formatted())
+                        Text("g")
+                    }.foregroundColor(.secondary)
+                }
+                if let fat = meal.first?.fat, fat > 0 {
+                    HStack {
+                        Text("Fat")
+                        Spacer()
+                        Text(fat.formatted())
+                        Text("g")
+                    }.foregroundColor(.secondary)
+                }
+                if let protein = meal.first?.protein, protein > 0 {
+                    HStack {
+                        Text("Protein")
+                        Spacer()
+                        Text(protein.formatted())
+                        Text("g")
+                    }.foregroundColor(.secondary)
+                }
+                if let note = meal.first?.note, note != "" {
+                    HStack {
+                        Text("Note")
+                        Spacer()
+                        Text(note)
+                    }.foregroundColor(.secondary)
+                }
+            }
         }
     }
 }

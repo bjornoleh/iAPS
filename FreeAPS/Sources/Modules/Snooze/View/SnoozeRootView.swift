@@ -88,6 +88,7 @@ extension Snooze {
                     debug(.default, "will snooze for \(snoozeFor) until \(dateFormatter.string(from: untilDate))")
                     snoozeDescription = getSnoozeDescription()
                     BaseUserNotificationsManager.stopSound()
+                    state.hideModal()
                 } label: {
                     Text("Click to Snooze Alerts")
                         .padding()
@@ -116,7 +117,8 @@ extension Snooze {
             }
             .navigationBarTitle("Snooze Alerts")
             .navigationBarTitleDisplayMode(.automatic)
-            .navigationBarItems(leading: Button("Close", action: state.hideModal))
+            .navigationBarItems(trailing: Button("Close", action: state.hideModal))
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .onAppear {
                 configureView()
                 snoozeDescription = getSnoozeDescription()

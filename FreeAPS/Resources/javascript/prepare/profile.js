@@ -1,7 +1,7 @@
 //для pumpprofile.json параметры: settings/settings.json settings/bg_targets.json settings/insulin_sensitivities.json settings/basal_profile.json preferences.json settings/carb_ratios.json settings/temptargets.json settings/model.json
 //для profile.json параметры: settings/settings.json settings/bg_targets.json settings/insulin_sensitivities.json settings/basal_profile.json preferences.json settings/carb_ratios.json settings/temptargets.json settings/model.json settings/autotune.json
 
-function generate(pumpsettings_data, bgtargets_data, isf_data, basalprofile_data, preferences_input = false, carbratio_input = false, temptargets_input = false, model_input = false, autotune_input = false) {
+function generate(pumpsettings_data, bgtargets_data, isf_data, basalprofile_data, preferences_input = false, carbratio_input = false, temptargets_input = false, model_input = false, autotune_input = false, freeaps_data, dynamicVariables) {
     if (bgtargets_data.units !== 'mg/dL') {
         if (bgtargets_data.units === 'mmol/L') {
             for (var i = 0, len = bgtargets_data.targets.length; i < len; i++) {
@@ -13,7 +13,7 @@ function generate(pumpsettings_data, bgtargets_data, isf_data, basalprofile_data
             return { "error" : 'BG Target data is expected to be expressed in mg/dL or mmol/L. Found '+ bgtargets_data.units };
         }
     }
-
+    
     if (isf_data.units !== 'mg/dL') {
         if (isf_data.units === 'mmol/L') {
             for (var i = 0, len = isf_data.sensitivities.length; i < len; i++) {
@@ -33,6 +33,11 @@ function generate(pumpsettings_data, bgtargets_data, isf_data, basalprofile_data
     var temptargets_data = { };
     if (temptargets_input) {
         temptargets_data = temptargets_input;
+    }
+    
+    var freeaps = { };
+    if (freeaps_data) {
+        freeaps = freeaps_data;
     }
 
     var model_data = { };
@@ -58,7 +63,25 @@ function generate(pumpsettings_data, bgtargets_data, isf_data, basalprofile_data
     var preferences = { };
     if (preferences_input) {
         preferences = preferences_input;
+        if (preferences.curve === "rapid-acting") {
+            if (preferences.useCustomPeakTime) {
+                preferences.insulinPeakTime =
+                Math.max(50, Math.min(preferences.insulinPeakTime, 120));
+            } else { preferences.insulinPeakTime = 75; }
+        } 
+        else if (preferences.curve === "ultra-rapid") {
+            if (preferences.useCustomPeakTime) {
+                preferences.insulinPeakTime =
+                Math.max(35, Math.min(preferences.insulinPeakTime, 100));
+            } else { preferences.insulinPeakTime = 55; }
+        }
+        // Migrate missing conversion from original freeaps
+        if (preferences.resistanceLowersTarget) {
+            preferences.resistance_lowers_target = true;
+        }
     }
+    
+    var tdd_factor = { };
 
     var inputs = { };
     //add all preferences to the inputs
@@ -67,22 +90,31 @@ function generate(pumpsettings_data, bgtargets_data, isf_data, basalprofile_data
         inputs[pref] = preferences[pref];
       }
     }
-
+    
     inputs.max_iob = inputs.max_iob || 0;
     //set these after to make sure nothing happens if they are also set in preferences
     inputs.settings = pumpsettings_data;
     inputs.targets = bgtargets_data;
+    
+    if (dynamicVariables.useOverride && dynamicVariables.overridePercentage != 100) {
+        basalprofile_data.forEach( basal => basal.rate *= (dynamicVariables.overridePercentage / 100));
+        console.log("Override basal IOB");
+    }
+    
     inputs.basals = basalprofile_data;
     inputs.isf = isf_data;
     inputs.carbratio = carbratio_data;
     inputs.temptargets = temptargets_data;
     inputs.model = model_data;
     inputs.autotune = autotune_data;
-
+    inputs.tddFactor = tdd_factor;
+    
     if (autotune_data) {
         if (autotune_data.basalprofile) { inputs.basals = autotune_data.basalprofile; }
-        if (autotune_data.isfProfile) { inputs.isf = autotune_data.isfProfile; }
-        if (autotune_data.carb_ratio) { inputs.carbratio.schedule[0].ratio = autotune_data.carb_ratio; }
+        if (!freeaps.onlyAutotuneBasals) {
+            if (autotune_data.isfProfile) { inputs.isf = autotune_data.isfProfile; }
+            if (autotune_data.carb_ratio) { inputs.carbratio.schedule[0].ratio = autotune_data.carb_ratio; }
+        }
     }
     return freeaps_profile(inputs);
 }

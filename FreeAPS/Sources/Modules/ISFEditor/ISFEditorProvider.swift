@@ -1,3 +1,5 @@
+import Foundation
+
 extension ISFEditor {
     final class Provider: BaseProvider, ISFEditorProvider {
         var profile: InsulinSensitivities {
@@ -20,8 +22,19 @@ extension ISFEditor {
                 ?? Autosens(ratio: 1, newisf: nil, timestamp: nil)
         }
 
+        var suggestion: Suggestion? {
+            storage.retrieve(OpenAPS.Enact.suggested, as: Suggestion.self)
+        }
+
         var autotune: Autotune? {
             storage.retrieve(OpenAPS.Settings.autotune, as: Autotune.self)
+        }
+
+        var sensitivity: NSDecimalNumber? {
+            if let suggestion = CoreDataStorage().fetchReason() {
+                return suggestion.isf ?? 15
+            }
+            return nil
         }
     }
 }

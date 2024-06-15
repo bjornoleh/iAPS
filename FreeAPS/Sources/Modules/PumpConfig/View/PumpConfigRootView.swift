@@ -31,15 +31,17 @@ extension PumpConfig {
                         }
                     }
                 }
+                .dynamicTypeSize(...DynamicTypeSize.xxLarge)
                 .onAppear(perform: configureView)
                 .navigationTitle("Pump config")
-                .navigationBarTitleDisplayMode(.automatic)
+                .navigationBarTitleDisplayMode(.inline)
                 .sheet(isPresented: $state.setupPump) {
                     if let pumpManager = state.provider.apsManager.pumpManager {
                         PumpSettingsView(
                             pumpManager: pumpManager,
                             bluetoothManager: state.provider.apsManager.bluetoothManager!,
-                            completionDelegate: state
+                            completionDelegate: state,
+                            setupDelegate: state
                         )
                     } else {
                         PumpSetupView(

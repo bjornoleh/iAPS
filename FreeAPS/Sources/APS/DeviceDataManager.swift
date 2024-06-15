@@ -264,7 +264,7 @@ final class BaseDeviceDataManager: DeviceDataManager, Injectable {
                                 direction: directions[index],
                                 date: Decimal(Int(sample.date.timeIntervalSince1970 * 1000)),
                                 dateString: sample.date,
-                                unfiltered: nil,
+                                unfiltered: Decimal(value),
                                 filtered: nil,
                                 noise: nil,
                                 glucose: value,
@@ -348,6 +348,9 @@ extension BaseDeviceDataManager: PumpManagerDelegate {
         storage.save(battery, as: OpenAPS.Monitor.battery)
         broadcaster.notify(PumpBatteryObserver.self, on: processQueue) {
             $0.pumpBatteryDidChange(battery)
+        }
+        broadcaster.notify(PumpTimeZoneObserver.self, on: processQueue) {
+            $0.pumpTimeZoneDidChange(status.timeZone)
         }
 
         if let omnipod = pumpManager as? OmnipodPumpManager {
@@ -651,4 +654,8 @@ protocol PumpReservoirObserver {
 
 protocol PumpBatteryObserver {
     func pumpBatteryDidChange(_ battery: Battery)
+}
+
+protocol PumpTimeZoneObserver {
+    func pumpTimeZoneDidChange(_ timezone: TimeZone)
 }

@@ -1,4 +1,6 @@
+import ActivityKit
 import CoreData
+import Foundation
 import SwiftUI
 import Swinject
 
@@ -44,24 +46,52 @@ import Swinject
         _ = resolver.resolve(WatchManager.self)!
         _ = resolver.resolve(HealthKitManager.self)!
         _ = resolver.resolve(BluetoothStateManager.self)!
+        if #available(iOS 16.2, *) {
+            _ = resolver.resolve(LiveActivityBridge.self)!
+        }
     }
 
     init() {
         debug(
             .default,
-            "FreeAPS X Started: v\(Bundle.main.releaseVersionNumber ?? "")(\(Bundle.main.buildVersionNumber ?? "")) [buildDate: \(Bundle.main.buildDate)]"
+            "iAPS Started: v\(Bundle.main.releaseVersionNumber ?? "")(\(Bundle.main.buildVersionNumber ?? "")) [buildDate: \(Bundle.main.buildDate)] [buildExpires: \(Bundle.main.profileExpiration ?? "")]"
         )
+        isNewVersion()
         loadServices()
     }
 
     var body: some Scene {
         WindowGroup {
             Main.RootView(resolver: resolver)
-
                 .environment(\.managedObjectContext, dataController.persistentContainer.viewContext)
+                .environmentObject(Icons())
+                .onOpenURL(perform: handleURL)
         }
         .onChange(of: scenePhase) { newScenePhase in
             debug(.default, "APPLICATION PHASE: \(newScenePhase)")
+        }
+    }
+
+    private func handleURL(_ url: URL) {
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+
+        switch components?.host {
+        case "device-select-resp":
+            resolver.resolve(NotificationCenter.self)!.post(name: .openFromGarminConnect, object: url)
+        default: break
+        }
+    }
+
+    private func isNewVersion() {
+        let userDefaults = UserDefaults.standard
+        var version = userDefaults.string(forKey: IAPSconfig.version) ?? ""
+
+        guard version.count > 1, version == (Bundle.main.releaseVersionNumber ?? "") else {
+            version = Bundle.main.releaseVersionNumber ?? ""
+            userDefaults.set(version, forKey: IAPSconfig.version)
+            userDefaults.set(true, forKey: IAPSconfig.newVersion)
+            debug(.default, "Running new version: \(version)")
+            return
         }
     }
 }

@@ -44,7 +44,9 @@ final class BasePumpHistoryStorage: PumpHistoryStorage, Injectable {
                         durationMin: nil,
                         rate: nil,
                         temp: nil,
-                        carbInput: nil
+                        carbInput: nil,
+                        isSMB: dose.automatic,
+                        isExternal: dose.manuallyEntered
                     )]
                 case .tempBasal:
                     guard let dose = event.dose else { return [] }
@@ -209,6 +211,16 @@ final class BasePumpHistoryStorage: PumpHistoryStorage, Injectable {
         }
     }
 
+    func determineBolusEventType(for event: PumpHistoryEvent) -> EventType {
+        if event.isSMB ?? false {
+            return .smb
+        }
+        if event.isExternal ?? false {
+            return .isExternal
+        }
+        return event.type
+    }
+
     func nightscoutTretmentsNotUploaded() -> [NigtscoutTreatment] {
         let events = recent()
         guard !events.isEmpty else { return [] }
@@ -230,6 +242,8 @@ final class BasePumpHistoryStorage: PumpHistoryStorage, Injectable {
                     insulin: nil,
                     notes: nil,
                     carbs: nil,
+                    fat: nil,
+                    protein: nil,
                     targetTop: nil,
                     targetBottom: nil
                 ))
@@ -247,19 +261,22 @@ final class BasePumpHistoryStorage: PumpHistoryStorage, Injectable {
         let bolusesAndCarbs = events.compactMap { event -> NigtscoutTreatment? in
             switch event.type {
             case .bolus:
+                let eventType = determineBolusEventType(for: event)
                 return NigtscoutTreatment(
                     duration: event.duration,
                     rawDuration: nil,
                     rawRate: nil,
                     absolute: nil,
                     rate: nil,
-                    eventType: .bolus,
+                    eventType: eventType,
                     createdAt: event.timestamp,
                     enteredBy: NigtscoutTreatment.local,
                     bolus: event,
                     insulin: event.amount,
                     notes: nil,
                     carbs: nil,
+                    fat: nil,
+                    protein: nil,
                     targetTop: nil,
                     targetBottom: nil
                 )
@@ -277,6 +294,8 @@ final class BasePumpHistoryStorage: PumpHistoryStorage, Injectable {
                     insulin: nil,
                     notes: nil,
                     carbs: Decimal(event.carbInput ?? 0),
+                    fat: nil,
+                    protein: nil,
                     targetTop: nil,
                     targetBottom: nil
                 )
@@ -300,6 +319,8 @@ final class BasePumpHistoryStorage: PumpHistoryStorage, Injectable {
                     insulin: nil,
                     notes: nil,
                     carbs: nil,
+                    fat: nil,
+                    protein: nil,
                     targetTop: nil,
                     targetBottom: nil
                 )
@@ -317,6 +338,8 @@ final class BasePumpHistoryStorage: PumpHistoryStorage, Injectable {
                     insulin: nil,
                     notes: nil,
                     carbs: nil,
+                    fat: nil,
+                    protein: nil,
                     targetTop: nil,
                     targetBottom: nil
                 )
@@ -334,6 +357,8 @@ final class BasePumpHistoryStorage: PumpHistoryStorage, Injectable {
                     insulin: nil,
                     notes: "Alarm \(String(describing: event.note)) \(event.type)",
                     carbs: nil,
+                    fat: nil,
+                    protein: nil,
                     targetTop: nil,
                     targetBottom: nil
                 )

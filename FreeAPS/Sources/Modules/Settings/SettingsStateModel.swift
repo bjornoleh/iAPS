@@ -9,6 +9,7 @@ extension Settings {
         @Published var closedLoop = false
         @Published var debugOptions = false
         @Published var animatedBackground = false
+        @Published var disableCGMError = true
 
         private(set) var buildNumber = ""
         private(set) var versionNumber = ""
@@ -16,8 +17,10 @@ extension Settings {
         private(set) var copyrightNotice = ""
 
         override func subscribe() {
+            nightscoutManager.fetchVersion()
             subscribeSetting(\.debugOptions, on: $debugOptions) { debugOptions = $0 }
             subscribeSetting(\.closedLoop, on: $closedLoop) { closedLoop = $0 }
+            subscribeSetting(\.disableCGMError, on: $disableCGMError) { disableCGMError = $0 }
 
             broadcaster.register(SettingsObserver.self, observer: self)
 
@@ -25,7 +28,26 @@ extension Settings {
 
             versionNumber = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
 
-            branch = Bundle.main.infoDictionary?["BuildBranch"] as? String ?? "Unknown"
+            // Read branch information from the branch.txt instead of infoDictionary
+            if let branchFileURL = Bundle.main.url(forResource: "branch", withExtension: "txt"),
+               let branchFileContent = try? String(contentsOf: branchFileURL)
+            {
+                let lines = branchFileContent.components(separatedBy: .newlines)
+                for line in lines {
+                    let components = line.components(separatedBy: "=")
+                    if components.count == 2 {
+                        let key = components[0].trimmingCharacters(in: .whitespaces)
+                        let value = components[1].trimmingCharacters(in: .whitespaces)
+
+                        if key == "BRANCH" {
+                            branch = value
+                            break
+                        }
+                    }
+                }
+            } else {
+                branch = "Unknown"
+            }
 
             copyrightNotice = Bundle.main.infoDictionary?["NSHumanReadableCopyright"] as? String ?? ""
 
@@ -46,14 +68,17 @@ extension Settings {
             return items
         }
 
-        func uploadProfile() {
-            NSLog("SettingsState Upload Profile")
-            nightscoutManager.uploadProfile()
+        func uploadProfileAndSettings(_ force: Bool) {
+            NSLog("SettingsState Upload Profile and Settings")
+            nightscoutManager.uploadProfileAndSettings(force)
         }
 
         func hideSettingsModal() {
-            nightscoutManager.uploadProfile()
             hideModal()
+        }
+
+        func deleteOverrides() {
+            nightscoutManager.deleteAllNSoverrrides() // For testing
         }
     }
 }
@@ -62,5 +87,6 @@ extension Settings.StateModel: SettingsObserver {
     func settingsDidChange(_ settings: FreeAPSSettings) {
         closedLoop = settings.closedLoop
         debugOptions = settings.debugOptions
+        disableCGMError = settings.disableCGMError
     }
 }

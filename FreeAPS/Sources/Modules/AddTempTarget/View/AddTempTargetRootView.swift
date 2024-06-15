@@ -1,3 +1,4 @@
+import CoreData
 import SwiftUI
 import Swinject
 
@@ -5,10 +6,15 @@ extension AddTempTarget {
     struct RootView: BaseView {
         let resolver: Resolver
         @StateObject var state = StateModel()
-        @State private var isPromtPresented = false
+        @State private var isPromptPresented = false
         @State private var isRemoveAlertPresented = false
         @State private var removeAlert: Alert?
         @State private var isEditing = false
+
+        @FetchRequest(
+            entity: TempTargetsSlider.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)]
+        ) var isEnabledArray: FetchedResults<TempTargetsSlider>
 
         private var formatter: NumberFormatter {
             let formatter = NumberFormatter()
@@ -27,92 +33,116 @@ extension AddTempTarget {
                     }
                 }
 
-                Section(
-                    header: Text("Basal Insulin and Sensitivity ratio"),
-                    footer: Text(
-                        NSLocalizedString(
-                            "A lower 'Half Basal Target' setting will reduce the basal and raise the ISF earlier, at a lower target glucose.",
-                            comment: ""
-                        ) +
-                            NSLocalizedString(" Your setting: ", comment: "") + "\(state.halfBasal) " +
-                            NSLocalizedString("mg/dl. Autosens.max limits the max endpoint", comment: "") +
-                            " (\(state.maxValue * 100) %)"
-                    )
-                ) {
-                    VStack {
-                        Slider(
-                            value: $state.percentage,
-                            in: 15 ...
-                                Double(state.maxValue * 100),
-                            step: 1,
-                            onEditingChanged: { editing in
-                                isEditing = editing
-                            }
-                        )
-                        Text("\(state.percentage.formatted(.number)) %")
-                            .foregroundColor(isEditing ? .orange : .blue)
-                            .font(.largeTitle)
-                        Divider()
-                        Text(
-                            NSLocalizedString("Target", comment: "") +
-                                (
-                                    state
-                                        .units == .mmolL ? ": \(computeTarget().asMmolL.formatted(.number)) mmol/L" :
-                                        ": \(computeTarget().formatted(.number)) mg/dl"
-                                )
-                        ).foregroundColor(.secondary).italic()
-                    }
+                HStack {
+                    Text("Experimental")
+                    Toggle(isOn: $state.viewPercantage) {}.controlSize(.mini)
+                    Image(systemName: "figure.highintensity.intervaltraining")
+                    Image(systemName: "fork.knife")
                 }
 
-                Section {
-                    HStack {
-                        Text("Duration")
-                        Spacer()
-                        DecimalTextField("0", value: $state.duration, formatter: formatter, cleanInput: true)
-                        Text("minutes").foregroundColor(.secondary)
+                if state.viewPercantage {
+                    Section {
+                        VStack {
+                            Text("\(state.percentage.formatted(.number)) % Insulin")
+                                .foregroundColor(isEditing ? .orange : .blue)
+                                .font(.largeTitle)
+                                .padding(.vertical)
+                            Slider(
+                                value: $state.percentage,
+                                in: 15 ...
+                                    min(Double(state.maxValue * 100), 200),
+                                step: 1,
+                                onEditingChanged: { editing in
+                                    isEditing = editing
+                                }
+                            )
+                            // Only display target slider when not 100 %
+                            if state.percentage != 100 {
+                                Spacer()
+                                Divider()
+                                Text(
+                                    (
+                                        state
+                                            .units == .mmolL ?
+                                            "\(state.computeTarget().asMmolL.formatted(.number.grouping(.never).rounded().precision(.fractionLength(1)))) mmol/L" :
+                                            "\(state.computeTarget().formatted(.number.grouping(.never).rounded().precision(.fractionLength(0)))) mg/dl"
+                                    )
+                                        + NSLocalizedString(" Target Glucose", comment: "")
+                                )
+                                .foregroundColor(.green)
+                                .padding(.vertical)
+
+                                Slider(
+                                    value: $state.hbt,
+                                    in: 101 ... 295,
+                                    step: 1
+                                ).accentColor(.green)
+                            }
+                        }
                     }
-                    DatePicker("Date", selection: $state.date)
-                    Button { isPromtPresented = true }
-                    label: { Text("Save as preset") }
+                } else {
+                    Section(header: Text("Custom")) {
+                        HStack {
+                            Text("Target")
+                            Spacer()
+                            DecimalTextField("0", value: $state.low, formatter: formatter, cleanInput: true)
+                            Text(state.units.rawValue).foregroundColor(.secondary)
+                        }
+                        HStack {
+                            Text("Duration")
+                            Spacer()
+                            DecimalTextField("0", value: $state.duration, formatter: formatter, cleanInput: true)
+                            Text("minutes").foregroundColor(.secondary)
+                        }
+                        DatePicker("Date", selection: $state.date)
+                        Button { isPromptPresented = true }
+                        label: { Text("Save as preset") }
+                    }
+                }
+                if state.viewPercantage {
+                    Section {
+                        HStack {
+                            Text("Duration")
+                            Spacer()
+                            DecimalTextField("0", value: $state.duration, formatter: formatter, cleanInput: true)
+                            Text("minutes").foregroundColor(.secondary)
+                        }
+                        DatePicker("Date", selection: $state.date)
+                        Button { isPromptPresented = true }
+                        label: { Text("Save as preset") }
+                            .disabled(state.duration == 0)
+                    }
                 }
 
                 Section {
                     Button { state.enact() }
-                    label: { Text("Enact") }
+                    label: { Text("Start") }
                     Button { state.cancel() }
                     label: { Text("Cancel Temp Target") }
                 }
             }
-            .popover(isPresented: $isPromtPresented) {
+            .popover(isPresented: $isPromptPresented) {
                 Form {
                     Section(header: Text("Enter preset name")) {
                         TextField("Name", text: $state.newPresetName)
                         Button {
                             state.save()
-                            isPromtPresented = false
+                            isPromptPresented = false
                         }
                         label: { Text("Save") }
-                        Button { isPromtPresented = false }
+                        Button { isPromptPresented = false }
                         label: { Text("Cancel") }
                     }
                 }
             }
-            .onAppear(perform: configureView)
-            .navigationTitle("Enact Temp Target")
-            .navigationBarTitleDisplayMode(.automatic)
-            .navigationBarItems(leading: Button("Close", action: state.hideModal))
-        }
-
-        func computeTarget() -> Decimal {
-            let ratio = min(Decimal(state.percentage / 100), state.maxValue)
-            let diff = Double(state.halfBasal - 100)
-            let multiplier = state.percentage - (diff * (state.percentage / 100))
-            var target = Decimal(diff + multiplier) / ratio
-
-            if (state.halfBasal + (state.halfBasal + target - 100)) <= 0 {
-                target = (state.halfBasal - 100 + (state.halfBasal - 100) * state.maxValue) / state.maxValue
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+            .onAppear {
+                configureView()
+                state.hbt = isEnabledArray.first?.hbt ?? 160
             }
-            return target
+            .navigationTitle("Enact Temp Target")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(trailing: Button("Close", action: state.hideModal))
         }
 
         private func presetView(for preset: TempTarget) -> some View {

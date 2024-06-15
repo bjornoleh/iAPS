@@ -126,8 +126,8 @@ final class BaseUserNotificationsManager: NSObject, UserNotificationsManager, In
 
     private func scheduleMissingLoopNotifiactions(date _: Date) {
         ensureCanSendNotification {
-            let title = NSLocalizedString("FreeAPS X not active", comment: "FreeAPS X not active")
-            let body = NSLocalizedString("Last loop was more then %d min ago", comment: "Last loop was more then %d min ago")
+            let title = NSLocalizedString("iAPS not active", comment: "iAPS not active")
+            let body = NSLocalizedString("Last loop was more than %d min ago", comment: "Last loop was more than %d min ago")
 
             let firstInterval = 20 // min
             let secondInterval = 40 // min
@@ -186,7 +186,6 @@ final class BaseUserNotificationsManager: NSObject, UserNotificationsManager, In
         addAppBadge(glucose: nil)
 
         let glucose = glucoseStorage.recent()
-
         guard let lastGlucose = glucose.last, let glucoseValue = lastGlucose.glucose else { return }
 
         addAppBadge(glucose: lastGlucose.glucose)
@@ -197,7 +196,6 @@ final class BaseUserNotificationsManager: NSObject, UserNotificationsManager, In
 
         ensureCanSendNotification {
             var titles: [String] = []
-
             var notificationAlarm = false
 
             switch self.glucoseStorage.alarm {
@@ -211,29 +209,27 @@ final class BaseUserNotificationsManager: NSObject, UserNotificationsManager, In
                 notificationAlarm = true
             }
 
-            if self.snoozeUntilDate > Date() {
-                titles.append(NSLocalizedString("(Snoozed)", comment: "(Snoozed)"))
-                notificationAlarm = false
-            }
-
             let delta = glucose.count >= 2 ? glucoseValue - (glucose[glucose.count - 2].glucose ?? 0) : nil
-
             let body = self.glucoseText(glucoseValue: glucoseValue, delta: delta, direction: lastGlucose.direction) + self
                 .infoBody()
 
-            titles.append(body)
+            if self.snoozeUntilDate > Date() {
+                titles.append(NSLocalizedString("(Snoozed)", comment: "(Snoozed)"))
+                notificationAlarm = false
+            } else {
+                titles.append(body)
+                let content = UNMutableNotificationContent()
+                content.title = titles.joined(separator: " ")
+                content.body = body
 
-            let content = UNMutableNotificationContent()
-            content.title = titles.joined(separator: " ")
-            content.body = body
+                if notificationAlarm {
+                    self.playSoundIfNeeded()
+                    content.sound = .default
+                    content.userInfo[NotificationAction.key] = NotificationAction.snooze.rawValue
+                }
 
-            if notificationAlarm {
-                self.playSoundIfNeeded()
-                content.sound = .default
-                content.userInfo[NotificationAction.key] = NotificationAction.snooze.rawValue
+                self.addRequest(identifier: .glucocoseNotification, content: content, deleteOld: true)
             }
-
-            self.addRequest(identifier: .glucocoseNotification, content: content, deleteOld: true)
         }
     }
 

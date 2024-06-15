@@ -8,49 +8,102 @@ extension Settings {
         @StateObject var state = StateModel()
         @State private var showShareSheet = false
 
+        @FetchRequest(
+            entity: VNr.entity(),
+            sortDescriptors: [NSSortDescriptor(key: "date", ascending: false)], predicate: NSPredicate(
+                format: "nr != %@", "" as String
+            )
+        ) var fetchedVersionNumber: FetchedResults<VNr>
+
         var body: some View {
             Form {
-                Section(
-                    header: Text(
-                        "FreeAPS X v\(state.versionNumber) - \(state.buildNumber) \nBranch: \(state.branch) \(state.copyrightNotice) "
-                    )
-                ) {
+                Section {
                     Toggle("Closed loop", isOn: $state.closedLoop)
                 }
+                header: {
+                    VStack(alignment: .leading) {
+                        if let expirationDate = Bundle.main.profileExpiration {
+                            Text(
+                                "iAPS v\(state.versionNumber) (\(state.buildNumber))\nBranch: \(state.branch) \(state.copyrightNotice)" +
+                                    "\nBuild Expires: " + expirationDate
+                            ).textCase(nil)
+                        } else {
+                            Text(
+                                "iAPS v\(state.versionNumber) (\(state.buildNumber))\nBranch: \(state.branch) \(state.copyrightNotice)"
+                            )
+                        }
 
-                Section(header: Text("Devices")) {
-                    Text("Pump").navigationLink(to: .pumpConfig, from: self)
-                    Text("CGM").navigationLink(to: .cgm, from: self)
+                        if let latest = fetchedVersionNumber.first, (latest.nr ?? "") > state.versionNumber
+                        {
+                            Text(
+                                "Latest version on GitHub: " +
+                                    ((latest.nr ?? "") < state.versionNumber ? (latest.dev ?? "") : (latest.nr ?? "")) + "\n"
+                            )
+                            .foregroundStyle(.orange).bold()
+                            .multilineTextAlignment(.leading)
+                        }
+                    }
                 }
 
-                Section(header: Text("Services")) {
+                Section {
+                    Text("Pump").navigationLink(to: .pumpConfig, from: self)
+                    Text("CGM").navigationLink(to: .cgm, from: self)
+                    Text("Watch").navigationLink(to: .watch, from: self)
+                } header: { Text("Devices") }
+
+                Section {
                     Text("Nightscout").navigationLink(to: .nighscoutConfig, from: self)
                     if HKHealthStore.isHealthDataAvailable() {
                         Text("Apple Health").navigationLink(to: .healthkit, from: self)
                     }
                     Text("Notifications").navigationLink(to: .notificationsConfig, from: self)
-                    Text("Fat And Protein Conversion").navigationLink(to: .fpuConfig, from: self)
-                }
+                } header: { Text("Services") }
 
-                Section(header: Text("Configuration")) {
-                    Text("Preferences").navigationLink(to: .preferencesEditor, from: self)
+                Section {
                     Text("Pump Settings").navigationLink(to: .pumpSettingsEditor, from: self)
                     Text("Basal Profile").navigationLink(to: .basalProfileEditor, from: self)
                     Text("Insulin Sensitivities").navigationLink(to: .isfEditor, from: self)
                     Text("Carb Ratios").navigationLink(to: .crEditor, from: self)
-                    Text("Target Ranges").navigationLink(to: .targetsEditor, from: self)
-                    Text("Autotune").navigationLink(to: .autotuneConfig, from: self)
-                }
+                    Text("Target Glucose").navigationLink(to: .targetsEditor, from: self)
+                } header: { Text("Configuration") }
 
-                Section(header: Text("Developer")) {
+                Section {
+                    Text("OpenAPS").navigationLink(to: .preferencesEditor, from: self)
+                    Text("Autotune").navigationLink(to: .autotuneConfig, from: self)
+                } header: { Text("OpenAPS") }
+
+                Section {
+                    Text("UI/UX").navigationLink(to: .statisticsConfig, from: self)
+                    Text("App Icons").navigationLink(to: .iconConfig, from: self)
+                    Text("Bolus Calculator").navigationLink(to: .bolusCalculatorConfig, from: self)
+                    Text("Fat And Protein Conversion").navigationLink(to: .fpuConfig, from: self)
+                    Text("Dynamic ISF").navigationLink(to: .dynamicISF, from: self)
+                    Text("Sharing").navigationLink(to: .sharing, from: self)
+                    Text("Contact Image").navigationLink(to: .contactTrick, from: self)
+                } header: { Text("Extra Features") }
+
+                Section {
                     Toggle("Debug options", isOn: $state.debugOptions)
                     if state.debugOptions {
                         Group {
-                            Text("NS Upload Profile").onTapGesture {
-                                state.uploadProfile()
+                            HStack {
+                                Text("NS Upload Profile and Settings")
+                                Button("Upload") { state.uploadProfileAndSettings(true) }
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .buttonStyle(.borderedProminent)
                             }
-                            Text("NS Uploaded Profile")
-                                .navigationLink(to: .configEditor(file: OpenAPS.Nightscout.uploadedProfile), from: self)
+                            /*
+                             HStack {
+                                 Text("Delete All NS Overrides")
+                                 Button("Delete") { state.deleteOverrides() }
+                                     .frame(maxWidth: .infinity, alignment: .trailing)
+                                     .buttonStyle(.borderedProminent)
+                                     .tint(.red)
+                             }*/
+
+                            HStack {
+                                Toggle("Ignore flat CGM readings", isOn: $state.disableCGMError)
+                            }
                         }
                         Group {
                             Text("Preferences")
@@ -84,6 +137,8 @@ extension Settings {
                                 .navigationLink(to: .configEditor(file: OpenAPS.FreeAPS.announcements), from: self)
                             Text("Enacted announcements")
                                 .navigationLink(to: .configEditor(file: OpenAPS.FreeAPS.announcementsEnacted), from: self)
+                            Text("Overrides Not Uploaded")
+                                .navigationLink(to: .configEditor(file: OpenAPS.Nightscout.notUploadedOverrides), from: self)
                             Text("Autotune")
                                 .navigationLink(to: .configEditor(file: OpenAPS.Settings.autotune), from: self)
                             Text("Glucose")
@@ -103,7 +158,7 @@ extension Settings {
                                 .navigationLink(to: .configEditor(file: OpenAPS.FreeAPS.settings), from: self)
                         }
                     }
-                }
+                } header: { Text("Developer") }
 
                 Section {
                     Toggle("Animated Background", isOn: $state.animatedBackground)
@@ -119,10 +174,12 @@ extension Settings {
             .sheet(isPresented: $showShareSheet) {
                 ShareSheet(activityItems: state.logItems())
             }
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .onAppear(perform: configureView)
             .navigationTitle("Settings")
-            .navigationBarItems(leading: Button("Close", action: state.hideSettingsModal))
-            .navigationBarTitleDisplayMode(.automatic)
+            .navigationBarItems(trailing: Button("Close", action: state.hideSettingsModal))
+            .navigationBarTitleDisplayMode(.inline)
+            .onDisappear(perform: { state.uploadProfileAndSettings(false) })
         }
     }
 }

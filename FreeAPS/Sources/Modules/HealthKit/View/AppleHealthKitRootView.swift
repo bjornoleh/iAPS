@@ -13,7 +13,7 @@ extension AppleHealthKit {
                     HStack {
                         Image(systemName: "pencil.circle.fill")
                         Text(
-                            "After you create glucose records in the Health app, please open FreeAPS X to help us guaranteed transfer changed data"
+                            "This allows iAPS to read from and write to Apple Heath. You must also give permissions in Settings > Health > Data Access. If you enter a glucose value into Apple Health, open iAPS to confirm it shows up."
                         )
                         .font(.caption)
                     }
@@ -28,6 +28,7 @@ extension AppleHealthKit {
                     }
                 }
             }
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .onAppear(perform: configureView)
             .navigationTitle("Apple Health")
             .navigationBarTitleDisplayMode(.automatic)

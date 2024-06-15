@@ -12,11 +12,11 @@ import LoopKitUI
 import HealthKit
 
 struct OmniBLESettingsView: View  {
-    
+
     @ObservedObject var viewModel: OmniBLESettingsViewModel
-    
+
     @State private var showingDeleteConfirmation = false
-    
+
     @State private var showSuspendOptions = false
 
     @State private var showManualTempBasalOptions = false
@@ -28,7 +28,7 @@ struct OmniBLESettingsView: View  {
     @State private var cancelingTempBasal = false
 
     var supportedInsulinTypes: [InsulinType]
-    
+
     @Environment(\.guidanceColors) var guidanceColors
     @Environment(\.insulinTintColor) var insulinTintColor
     
@@ -243,7 +243,7 @@ struct OmniBLESettingsView: View  {
     }
     
     private var doneButton: some View {
-        Button("Done", action: {
+        Button(LocalizedString("Done", comment: "Title of done button on OmniBLESettingsView"), action: {
             self.viewModel.doneTapped()
         })
     }
@@ -264,7 +264,10 @@ struct OmniBLESettingsView: View  {
                 VStack(alignment: .trailing) {
                     Button(action: {
                         sendingTestBeepsCommand = true
-                        viewModel.playTestBeeps { _ in
+                        Task { @MainActor in
+                            do {
+                                try await viewModel.playTestBeeps()
+                            }
                             sendingTestBeepsCommand = false
                         }
                     }) {
@@ -279,7 +282,7 @@ struct OmniBLESettingsView: View  {
                     headerImage
 
                     lifecycleProgress
-                    
+
                     HStack(alignment: .top) {
                         deliveryStatus
                         Spacer()
@@ -302,7 +305,7 @@ struct OmniBLESettingsView: View  {
                     }.padding(.vertical, 8)
                 }
             }
-            
+
             Section(header: SectionHeader(label: LocalizedString("Activity", comment: "Section header for activity section"))) {
                 suspendResumeRow()
                     .disabled(!self.viewModel.podOk)
@@ -343,8 +346,8 @@ struct OmniBLESettingsView: View  {
                     manualTempBasalRow
                 }
             }
-            .disabled(cancelingTempBasal)
-            
+            .disabled(cancelingTempBasal || !self.viewModel.podOk)
+
             Section() {
                 HStack {
                     FrameworkLocalText("Pod Activated", comment: "Label for pod insertion row")
@@ -352,7 +355,7 @@ struct OmniBLESettingsView: View  {
                     Text(self.viewModel.activatedAtString)
                         .foregroundColor(Color.secondary)
                 }
-                
+
                 HStack {
                     if let expiresAt = viewModel.expiresAt, expiresAt < Date() {
                         FrameworkLocalText("Pod Expired", comment: "Label for pod expiration row, past tense")
@@ -363,21 +366,36 @@ struct OmniBLESettingsView: View  {
                     Text(self.viewModel.expiresAtString)
                         .foregroundColor(Color.secondary)
                 }
-                
+
                 if let podDetails = self.viewModel.podDetails {
-                    NavigationLink(destination: PodDetailsView(podDetails: podDetails, title: LocalizedString("Device Details", comment: "title for device details page"))) {
-                        FrameworkLocalText("Device Details", comment: "Text for device details disclosure row").foregroundColor(Color.primary)
+                    NavigationLink(destination: PodDetailsView(podDetails: podDetails, title: LocalizedString("Pod Details", comment: "title for pod details page"))) {
+                        FrameworkLocalText("Pod Details", comment: "Text for pod details disclosure row")
+                            .foregroundColor(Color.primary)
                     }
                 } else {
                     HStack {
-                        FrameworkLocalText("Device Details", comment: "Text for device details disclosure row")
+                        FrameworkLocalText("Pod Details", comment: "Text for pod details disclosure row")
+                        Spacer()
+                        Text("—")
+                            .foregroundColor(Color.secondary)
+                    }
+                }
+
+                if let previousPodDetails = viewModel.previousPodDetails {
+                    NavigationLink(destination: PodDetailsView(podDetails: previousPodDetails, title: LocalizedString("Previous Pod", comment: "title for previous pod page"))) {
+                        FrameworkLocalText("Previous Pod Details", comment: "Text for previous pod details row")
+                            .foregroundColor(Color.primary)
+                    }
+                } else {
+                    HStack {
+                        FrameworkLocalText("Previous Pod Details", comment: "Text for previous pod details row")
                         Spacer()
                         Text("—")
                             .foregroundColor(Color.secondary)
                     }
                 }
             }
-            
+
             Section() {
                 Button(action: {
                     self.viewModel.navigateTo?(self.viewModel.lifeState.nextPodLifecycleAction)
@@ -386,7 +404,7 @@ struct OmniBLESettingsView: View  {
                         .foregroundColor(self.viewModel.lifeState.nextPodLifecycleActionColor)
                 }
             }
-            
+
             Section(header: SectionHeader(label: LocalizedString("Configuration", comment: "Section header for configuration section")))
             {
                 NavigationLink(destination:
@@ -403,15 +421,25 @@ struct OmniBLESettingsView: View  {
                 }
                 NavigationLink(destination: BeepPreferenceSelectionView(initialValue: viewModel.beepPreference, onSave: viewModel.setConfirmationBeeps)) {
                     HStack {
-                        FrameworkLocalText("Confidence Reminders", comment: "Text for confidence reminders navigation link").foregroundColor(Color.primary)
+                        FrameworkLocalText("Confidence Reminders", comment: "Text for confidence reminders navigation link")
+                            .foregroundColor(Color.primary)
                         Spacer()
                         Text(viewModel.beepPreference.title)
                             .foregroundColor(.secondary)
                     }
                 }
+                NavigationLink(destination: SilencePodSelectionView(initialValue: viewModel.silencePodPreference, onSave: viewModel.setSilencePod)) {
+                    HStack {
+                        FrameworkLocalText("Silence Pod", comment: "Text for silence pod navigation link")
+                            .foregroundColor(Color.primary)
+                        Spacer()
+                        Text(viewModel.silencePodPreference.title)
+                            .foregroundColor(.secondary)
+                    }
+                }
                 NavigationLink(destination: InsulinTypeSetting(initialValue: viewModel.insulinType, supportedInsulinTypes: supportedInsulinTypes, allowUnsetInsulinType: false, didChange: viewModel.didChangeInsulinType)) {
                     HStack {
-                        FrameworkLocalText("Insulin Type", comment: "Text for confidence reminders navigation link").foregroundColor(Color.primary)
+                        FrameworkLocalText("Insulin Type", comment: "Text for insulin type navigation link").foregroundColor(Color.primary)
                         if let currentTitle = viewModel.insulinType?.brandName {
                             Spacer()
                             Text(currentTitle)
@@ -420,7 +448,7 @@ struct OmniBLESettingsView: View  {
                     }
                 }
             }
-            
+
             Section() {
                 HStack {
                     FrameworkLocalText("Pump Time", comment: "The title of the command to change pump time zone")
@@ -451,14 +479,17 @@ struct OmniBLESettingsView: View  {
                 }
             }
 
-            if let previousPodDetails = viewModel.previousPodDetails {
-                Section() {
-                    NavigationLink(destination: PodDetailsView(podDetails: previousPodDetails, title: LocalizedString("Previous Pod", comment: "title for previous pod page"))) {
-                        FrameworkLocalText("Previous Pod Information", comment: "Text for previous pod information row").foregroundColor(Color.primary)
-                    }
+            Section() {
+                NavigationLink(destination: PodDiagnosticsView(
+                    title: LocalizedString("Pod Diagnostics", comment: "Title for the pod diagnostic view"),
+                    diagnosticCommands: viewModel.diagnosticCommands,
+                    podOk: viewModel.podOk,
+                    noPod: viewModel.noPod))
+                {
+                    FrameworkLocalText("Pod Diagnostics", comment: "Text for pod diagnostics row")
+                        .foregroundColor(Color.primary)
                 }
             }
-            
 
             if self.viewModel.lifeState.allowsPumpManagerRemoval {
                 Section() {
@@ -501,7 +532,7 @@ struct OmniBLESettingsView: View  {
     var suspendOptionsActionSheet: ActionSheet {
         ActionSheet(
             title: FrameworkLocalText("Suspend Delivery", comment: "Title for suspend duration selection action sheet"),
-            message: FrameworkLocalText("Insulin delivery will be stopped until you resume manually. When would you like Loop to remind you to resume delivery?", comment: "Message for suspend duration selection action sheet"),
+            message: FrameworkLocalText("Insulin delivery will be stopped until you resume manually. Select when you want to be reminded to resume delivery?", comment: "Message for suspend duration selection action sheet"),
             buttons: [
                 .default(FrameworkLocalText("30 minutes", comment: "Button text for 30 minute suspend duration"), action: { self.viewModel.suspendDelivery(duration: .minutes(30)) }),
                 .default(FrameworkLocalText("1 hour", comment: "Button text for 1 hour suspend duration"), action: { self.viewModel.suspendDelivery(duration: .hours(1)) }),

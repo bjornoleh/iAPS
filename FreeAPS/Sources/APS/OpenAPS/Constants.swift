@@ -20,6 +20,7 @@ extension OpenAPS {
         static let autosens = "prepare/autosens.js"
         static let profile = "prepare/profile.js"
         static let log = "prepare/log.js"
+        static let string = "prepare/middleware.js"
     }
 
     enum Middleware {
@@ -39,6 +40,7 @@ extension OpenAPS {
         static let carbRatios = "settings/carb_ratios.json"
         static let tempTargets = "settings/temptargets.json"
         static let model = "settings/model.json"
+        static let contactTrick = "settings/contact_trick.json"
     }
 
     enum Monitor {
@@ -54,8 +56,7 @@ extension OpenAPS {
         static let iob = "monitor/iob.json"
         static let cgmState = "monitor/cgm-state.json"
         static let podAge = "monitor/pod-age.json"
-        // static let tdd = "monitor/tdd.json"
-        static let tdd_averages = "monitor/tdd_averages.json"
+        static let dynamicVariables = "monitor/dynamicVariables.json"
         static let alertHistory = "monitor/alerthistory.json"
         static let statistics = "monitor/statistics.json"
     }
@@ -86,6 +87,10 @@ extension OpenAPS {
         static let uploadedCGMState = "upload/uploaded-cgm-state.json"
         static let uploadedPodAge = "upload/uploaded-pod-age.json"
         static let uploadedProfile = "upload/uploaded-profile.json"
+        static let uploadedPreferences = "upload/uploaded-preferences.json"
+        static let uploadedSettings = "upload/uploaded-settings.json"
+        static let uploadedManualGlucose = "upload/uploaded-manual-readings.json"
+        static let notUploadedOverrides = "upload/not-uploaded-overrides.json"
     }
 
     enum FreeAPS {

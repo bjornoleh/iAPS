@@ -45,7 +45,7 @@
 		10389A2626FF7841002115E9 /* TempBasalExtraCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A0726FF7841002115E9 /* TempBasalExtraCommand.swift */; };
 		10389A2726FF7841002115E9 /* DeactivatePodCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A0826FF7841002115E9 /* DeactivatePodCommand.swift */; };
 		10389A2826FF7841002115E9 /* AcknowledgeAlertCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A0926FF7841002115E9 /* AcknowledgeAlertCommand.swift */; };
-		10389A2926FF7841002115E9 /* PodInfoConfiguredAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A0A26FF7841002115E9 /* PodInfoConfiguredAlerts.swift */; };
+		10389A2926FF7841002115E9 /* PodInfoTriggeredAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A0A26FF7841002115E9 /* PodInfoTriggeredAlerts.swift */; };
 		10389A2A26FF7841002115E9 /* MessageBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A0B26FF7841002115E9 /* MessageBlock.swift */; };
 		10389A2B26FF7841002115E9 /* PlaceholderMessageBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A0C26FF7841002115E9 /* PlaceholderMessageBlock.swift */; };
 		10389A2C26FF7841002115E9 /* PodInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A0D26FF7841002115E9 /* PodInfo.swift */; };
@@ -67,7 +67,8 @@
 		10389A3C26FF7841002115E9 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A1D26FF7841002115E9 /* Message.swift */; };
 		10389A3F26FF7841002115E9 /* CRC16.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A2026FF7841002115E9 /* CRC16.swift */; };
 		10389A4126FF7841002115E9 /* MessageTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10389A2226FF7841002115E9 /* MessageTransport.swift */; };
-		193E48D529B4AEF3006927CB /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 193E48BA29B4AEF3006927CB /* Localizable.strings */; };
+		191DB66D2A06F17800212AC9 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 191DB6522A06F17800212AC9 /* Localizable.strings */; };
+		196A6F232AFFFD1700E3C089 /* SilencePodPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196A6F222AFFFD1200E3C089 /* SilencePodPreference.swift */; };
 		84752E9326ED0FFE009FD801 /* OmniBLE.h in Headers */ = {isa = PBXBuildFile; fileRef = 84752E8526ED0FFE009FD801 /* OmniBLE.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		84752ED626ED13F5009FD801 /* Id.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84752EBF26ED13F5009FD801 /* Id.swift */; };
 		84752ED726ED13F5009FD801 /* X25519KeyGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84752EC126ED13F5009FD801 /* X25519KeyGenerator.swift */; };
@@ -86,8 +87,6 @@
 		8475306E26ED15DE009FD801 /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8475306D26ED15DE009FD801 /* CryptoSwift */; };
 		847530F626ED65DD009FD801 /* LoopKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 847530F426ED65DD009FD801 /* LoopKit.framework */; };
 		847530F826ED65DD009FD801 /* LoopKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 847530F526ED65DD009FD801 /* LoopKitUI.framework */; };
-		8475313226ED838B009FD801 /* PodLifeHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8475311F26ED838A009FD801 /* PodLifeHUDView.swift */; };
-		8475313726ED838B009FD801 /* PodLifeHUDView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8475312426ED838A009FD801 /* PodLifeHUDView.xib */; };
 		8475315326EDA193009FD801 /* TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8475314626EDA193009FD801 /* TimeInterval.swift */; };
 		8475315726EDA193009FD801 /* LocalizedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8475314A26EDA193009FD801 /* LocalizedString.swift */; };
 		8475315826EDA193009FD801 /* OSLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8475314B26EDA193009FD801 /* OSLog.swift */; };
@@ -168,10 +167,18 @@
 		D802CD0A27DD98C10072E3A1 /* TempBasalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D802CD0527DD98C10072E3A1 /* TempBasalTests.swift */; };
 		D802CD1027DD99AB0072E3A1 /* CRC16Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D802CD0F27DD99AB0072E3A1 /* CRC16Tests.swift */; };
 		D802CD1227DD9AE10072E3A1 /* BasalScheduleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D802CD1127DD9AE10072E3A1 /* BasalScheduleTests.swift */; };
+		D845A1372AF89F5500EA0853 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D845A1362AF89F5500EA0853 /* ActivityView.swift */; };
+		D845A13B2AF89F7100EA0853 /* PlayTestBeepsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D845A13A2AF89F7100EA0853 /* PlayTestBeepsView.swift */; };
+		D845A13F2AF89F8400EA0853 /* ReadPodStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D845A13C2AF89F8400EA0853 /* ReadPodStatusView.swift */; };
+		D845A1412AF89F8400EA0853 /* PumpManagerDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D845A13E2AF89F8400EA0853 /* PumpManagerDetailsView.swift */; };
+		D845A1432AF89F9200EA0853 /* SilencePodSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D845A1422AF89F9200EA0853 /* SilencePodSelectionView.swift */; };
+		D85AEABC2B12D76F00081044 /* PodDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85AEABB2B12D76F00081044 /* PodDiagnosticsView.swift */; };
+		D85AEAC42B13083F00081044 /* ReadPodInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85AEAC32B13083F00081044 /* ReadPodInfoView.swift */; };
 		D8896C6227890E6B00E09A96 /* DetailedStatus+OmniBLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8896C6127890E6B00E09A96 /* DetailedStatus+OmniBLE.swift */; };
 		D895BF5B275DE64000D51FC7 /* StringLengthPrefixEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D895BF5A275DE64000D51FC7 /* StringLengthPrefixEncoding.swift */; };
 		D897B06B29347ED500FDB009 /* BolusDeliveryTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897B06A29347ED500FDB009 /* BolusDeliveryTable.swift */; };
 		D897B06D29347EE500FDB009 /* InsulinTableEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D897B06C29347EE500FDB009 /* InsulinTableEntry.swift */; };
+		D8DA5CCE2B49EDE900C54E6C /* SlideButton in Frameworks */ = {isa = PBXBuildFile; productRef = D8DA5CCD2B49EDE900C54E6C /* SlideButton */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -243,7 +250,7 @@
 		10389A0726FF7841002115E9 /* TempBasalExtraCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TempBasalExtraCommand.swift; sourceTree = "<group>"; };
 		10389A0826FF7841002115E9 /* DeactivatePodCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeactivatePodCommand.swift; sourceTree = "<group>"; };
 		10389A0926FF7841002115E9 /* AcknowledgeAlertCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AcknowledgeAlertCommand.swift; sourceTree = "<group>"; };
-		10389A0A26FF7841002115E9 /* PodInfoConfiguredAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PodInfoConfiguredAlerts.swift; sourceTree = "<group>"; };
+		10389A0A26FF7841002115E9 /* PodInfoTriggeredAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PodInfoTriggeredAlerts.swift; sourceTree = "<group>"; };
 		10389A0B26FF7841002115E9 /* MessageBlock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageBlock.swift; sourceTree = "<group>"; };
 		10389A0C26FF7841002115E9 /* PlaceholderMessageBlock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceholderMessageBlock.swift; sourceTree = "<group>"; };
 		10389A0D26FF7841002115E9 /* PodInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PodInfo.swift; sourceTree = "<group>"; };
@@ -265,51 +272,34 @@
 		10389A1D26FF7841002115E9 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		10389A2026FF7841002115E9 /* CRC16.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CRC16.swift; sourceTree = "<group>"; };
 		10389A2226FF7841002115E9 /* MessageTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTransport.swift; sourceTree = "<group>"; };
-		193E485A29B4187E006927CB /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E485B29B41881006927CB /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48BB29B4AEF3006927CB /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48BC29B4AEF3006927CB /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48BD29B4AEF3006927CB /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48BE29B4AEF3006927CB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		193E48BF29B4AEF3006927CB /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C029B4AEF3006927CB /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C129B4AEF3006927CB /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C229B4AEF3006927CB /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C329B4AEF3006927CB /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C429B4AEF3006927CB /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C529B4AEF3006927CB /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C629B4AEF3006927CB /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C729B4AEF3006927CB /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C829B4AEF3006927CB /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48C929B4AEF3006927CB /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48CA29B4AEF3006927CB /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		193E48CB29B4AEF3006927CB /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48CC29B4AEF3006927CB /* lt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lt; path = lt.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48CD29B4AEF3006927CB /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48CE29B4AEF3006927CB /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48CF29B4AEF3006927CB /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48D029B4AEF3006927CB /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48D129B4AEF3006927CB /* bn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bn; path = bn.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48D229B4AEF3006927CB /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		193E48D329B4AEF3006927CB /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
-		193E48D429B4AEF3006927CB /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6328D909E2009B453B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6428D909E7009B453B /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		4B23AA6528D909E9009B453B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6628D909EC009B453B /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6728D909EE009B453B /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6828D909F1009B453B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6A28D909F5009B453B /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6B28D909F7009B453B /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6C28D909FA009B453B /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6D28D909FD009B453B /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA6E28D909FF009B453B /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		4B23AA6F28D90A01009B453B /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA7028D90A03009B453B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA7128D90A06009B453B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA7228D90A08009B453B /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B23AA7428D90A0D009B453B /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		4B67E2D4289B4EDB002D92AF /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6532A06F17800212AC9 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6542A06F17800212AC9 /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6552A06F17800212AC9 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6562A06F17800212AC9 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		191DB6572A06F17800212AC9 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6582A06F17800212AC9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6592A06F17800212AC9 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB65A2A06F17800212AC9 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB65B2A06F17800212AC9 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB65C2A06F17800212AC9 /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB65D2A06F17800212AC9 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB65E2A06F17800212AC9 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB65F2A06F17800212AC9 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6602A06F17800212AC9 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6612A06F17800212AC9 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6622A06F17800212AC9 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		191DB6632A06F17800212AC9 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6642A06F17800212AC9 /* lt */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = lt; path = lt.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6652A06F17800212AC9 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6662A06F17800212AC9 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6672A06F17800212AC9 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6682A06F17800212AC9 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB6692A06F17800212AC9 /* bn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bn; path = bn.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB66A2A06F17800212AC9 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		191DB66B2A06F17800212AC9 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/Localizable.strings; sourceTree = "<group>"; };
+		191DB66C2A06F17800212AC9 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
+		193F1E492B44C21100525770 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/Localizable.strings; sourceTree = "<group>"; };
+		196A6F222AFFFD1200E3C089 /* SilencePodPreference.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SilencePodPreference.swift; sourceTree = "<group>"; };
 		84752E8226ED0FFE009FD801 /* OmniBLE.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OmniBLE.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		84752E8526ED0FFE009FD801 /* OmniBLE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OmniBLE.h; sourceTree = "<group>"; };
 		84752E8626ED0FFE009FD801 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -331,8 +321,6 @@
 		84752ED526ED13F5009FD801 /* PairMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PairMessage.swift; sourceTree = "<group>"; };
 		847530F426ED65DD009FD801 /* LoopKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = LoopKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		847530F526ED65DD009FD801 /* LoopKitUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = LoopKitUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8475311F26ED838A009FD801 /* PodLifeHUDView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PodLifeHUDView.swift; sourceTree = "<group>"; };
-		8475312426ED838A009FD801 /* PodLifeHUDView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PodLifeHUDView.xib; sourceTree = "<group>"; };
 		8475314626EDA193009FD801 /* TimeInterval.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeInterval.swift; sourceTree = "<group>"; };
 		8475314A26EDA193009FD801 /* LocalizedString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalizedString.swift; sourceTree = "<group>"; };
 		8475314B26EDA193009FD801 /* OSLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSLog.swift; sourceTree = "<group>"; };
@@ -413,6 +401,13 @@
 		D802CD0527DD98C10072E3A1 /* TempBasalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TempBasalTests.swift; sourceTree = "<group>"; };
 		D802CD0F27DD99AB0072E3A1 /* CRC16Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CRC16Tests.swift; sourceTree = "<group>"; };
 		D802CD1127DD9AE10072E3A1 /* BasalScheduleTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasalScheduleTests.swift; sourceTree = "<group>"; };
+		D845A1362AF89F5500EA0853 /* ActivityView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
+		D845A13A2AF89F7100EA0853 /* PlayTestBeepsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayTestBeepsView.swift; sourceTree = "<group>"; };
+		D845A13C2AF89F8400EA0853 /* ReadPodStatusView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadPodStatusView.swift; sourceTree = "<group>"; };
+		D845A13E2AF89F8400EA0853 /* PumpManagerDetailsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PumpManagerDetailsView.swift; sourceTree = "<group>"; };
+		D845A1422AF89F9200EA0853 /* SilencePodSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SilencePodSelectionView.swift; sourceTree = "<group>"; };
+		D85AEABB2B12D76F00081044 /* PodDiagnosticsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PodDiagnosticsView.swift; sourceTree = "<group>"; };
+		D85AEAC32B13083F00081044 /* ReadPodInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadPodInfoView.swift; sourceTree = "<group>"; };
 		D8896C6127890E6B00E09A96 /* DetailedStatus+OmniBLE.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DetailedStatus+OmniBLE.swift"; sourceTree = "<group>"; };
 		D895BF5A275DE64000D51FC7 /* StringLengthPrefixEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringLengthPrefixEncoding.swift; sourceTree = "<group>"; };
 		D897B06A29347ED500FDB009 /* BolusDeliveryTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BolusDeliveryTable.swift; sourceTree = "<group>"; };
@@ -424,6 +419,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8DA5CCE2B49EDE900C54E6C /* SlideButton in Frameworks */,
 				847530F626ED65DD009FD801 /* LoopKit.framework in Frameworks */,
 				8475306E26ED15DE009FD801 /* CryptoSwift in Frameworks */,
 				847530F826ED65DD009FD801 /* LoopKitUI.framework in Frameworks */,
@@ -470,6 +466,7 @@
 				1016325627185EE4007A3BC2 /* PodProgressStatus.swift */,
 				C1F67ED927979E400017487F /* PumpManagerAlert.swift */,
 				C1F67EE127985F580017487F /* ReservoirLevel.swift */,
+				196A6F222AFFFD1200E3C089 /* SilencePodPreference.swift */,
 				1016325827185EE4007A3BC2 /* UnfinalizedDose.swift */,
 			);
 			path = OmnipodCommon;
@@ -516,10 +513,10 @@
 				10389A0C26FF7841002115E9 /* PlaceholderMessageBlock.swift */,
 				10389A0D26FF7841002115E9 /* PodInfo.swift */,
 				10389A0626FF7841002115E9 /* PodInfoActivationTime.swift */,
-				10389A0A26FF7841002115E9 /* PodInfoConfiguredAlerts.swift */,
 				10389A0426FF7841002115E9 /* PodInfoPulseLog.swift */,
 				10389A1026FF7841002115E9 /* PodInfoPulseLogPlus.swift */,
 				10389A1A26FF7841002115E9 /* PodInfoResponse.swift */,
+				10389A0A26FF7841002115E9 /* PodInfoTriggeredAlerts.swift */,
 				10389A1B26FF7841002115E9 /* SetInsulinScheduleCommand.swift */,
 				10389A1826FF7841002115E9 /* SetupPodCommand.swift */,
 				10389A1126FF7841002115E9 /* StatusResponse.swift */,
@@ -529,10 +526,10 @@
 			path = MessageBlocks;
 			sourceTree = "<group>";
 		};
-		193E48B929B4AEF3006927CB /* Localizations */ = {
+		191DB6512A06F17800212AC9 /* Localizations */ = {
 			isa = PBXGroup;
 			children = (
-				193E48BA29B4AEF3006927CB /* Localizable.strings */,
+				191DB6522A06F17800212AC9 /* Localizable.strings */,
 			);
 			path = Localizations;
 			sourceTree = "<group>";
@@ -540,7 +537,7 @@
 		84752E7826ED0FFE009FD801 = {
 			isa = PBXGroup;
 			children = (
-				193E48B929B4AEF3006927CB /* Localizations */,
+				191DB6512A06F17800212AC9 /* Localizations */,
 				A91B2DEB276E1E5E001B0E95 /* README.md */,
 				84752EE926ED1402009FD801 /* Common */,
 				84752E8426ED0FFE009FD801 /* OmniBLE */,
@@ -570,7 +567,6 @@
 				8475311D26ED8246009FD801 /* PumpManagerUI */,
 				84752E8526ED0FFE009FD801 /* OmniBLE.h */,
 				84752E8626ED0FFE009FD801 /* Info.plist */,
-				4B67E2D3289B4EDB002D92AF /* Localizable.strings */,
 			);
 			path = OmniBLE;
 			sourceTree = "<group>";
@@ -610,15 +606,15 @@
 		84752EAD26ED11A4009FD801 /* PumpManager */ = {
 			isa = PBXGroup;
 			children = (
-				C1C001C027A2349D00533D35 /* OmniBLE.swift */,
 				D8896C6127890E6B00E09A96 /* DetailedStatus+OmniBLE.swift */,
 				10389A2226FF7841002115E9 /* MessageTransport.swift */,
+				C1C001C027A2349D00533D35 /* OmniBLE.swift */,
 				1029AE4627094D0E00B7F5B6 /* OmniBLEPumpManager.swift */,
 				1029AE4727094D0E00B7F5B6 /* OmniBLEPumpManagerState.swift */,
-				102111422709462300784F13 /* PodCommsSession.swift */,
-				1021114C2709467400784F13 /* PodComms.swift */,
-				102111402709462300784F13 /* PodState.swift */,
 				C1D27A1A27911E9900C41EBA /* PodAdvertisement.swift */,
+				1021114C2709467400784F13 /* PodComms.swift */,
+				102111422709462300784F13 /* PodCommsSession.swift */,
+				102111402709462300784F13 /* PodState.swift */,
 			);
 			path = PumpManager;
 			sourceTree = "<group>";
@@ -698,12 +694,12 @@
 		8475311D26ED8246009FD801 /* PumpManagerUI */ = {
 			isa = PBXGroup;
 			children = (
-				C1F67EBB27975F060017487F /* ViewModels */,
+				C1F67EDF2797B1EF0017487F /* OmniBLEHUDProvider.swift */,
 				1029AE4A27094DDC00B7F5B6 /* OmniBLEPumpManager+UI.swift */,
 				1029AE4E27094E1900B7F5B6 /* OmniBLEUI.xcassets */,
 				8475312626ED838A009FD801 /* ViewControllers */,
+				C1F67EBB27975F060017487F /* ViewModels */,
 				8475311E26ED838A009FD801 /* Views */,
-				C1F67EDF2797B1EF0017487F /* OmniBLEHUDProvider.swift */,
 			);
 			path = PumpManagerUI;
 			sourceTree = "<group>";
@@ -711,34 +707,39 @@
 		8475311E26ED838A009FD801 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				C1C001C327A2351D00533D35 /* OmniBLEReservoirView.swift */,
-				C1C001C227A2351D00533D35 /* OmniBLEReservoirView.xib */,
-				C1F67EB227975E710017487F /* DesignElements */,
+				D845A1362AF89F5500EA0853 /* ActivityView.swift */,
 				C1F67E7327975B830017487F /* AttachPodView.swift */,
 				C1F67E7A27975B830017487F /* BasalStateView.swift */,
+				C1ED1E7127BAE44E00FED71C /* BeepPreferenceSelectionView.swift */,
 				C1F67E8027975B830017487F /* CheckInsertedCannulaView.swift */,
-				C1F67E7727975B830017487F /* OmniBLESettingsView.swift */,
 				C1F67E7927975B830017487F /* DeactivatePodView.swift */,
 				C1F67E8227975B830017487F /* DeliveryUncertaintyRecoveryView.swift */,
+				C1F67EB227975E710017487F /* DesignElements */,
 				C1F67E7B27975B830017487F /* ExpirationReminderPickerView.swift */,
 				C1F67E7827975B830017487F /* ExpirationReminderSetupView.swift */,
 				C1F67E7D27975B830017487F /* HUDAssets.xcassets */,
 				C1F67E8527975B830017487F /* InsertCannulaView.swift */,
+				C187C190278FCEC9006E3557 /* InsulinTypeConfirmation.swift */,
 				C1F67E8627975B830017487F /* LowReservoirReminderEditView.swift */,
 				C1F67E7C27975B830017487F /* LowReservoirReminderSetupView.swift */,
+				C1DBD512282FF79D009FCF74 /* ManualTempBasalEntryView.swift */,
 				C1F67E8127975B830017487F /* NotificationSettingsView.swift */,
+				C1C001C327A2351D00533D35 /* OmniBLEReservoirView.swift */,
+				C1C001C227A2351D00533D35 /* OmniBLEReservoirView.xib */,
+				C1F67E7727975B830017487F /* OmniBLESettingsView.swift */,
 				C1F67E7F27975B830017487F /* PairPodView.swift */,
+				D845A13A2AF89F7100EA0853 /* PlayTestBeepsView.swift */,
 				C1F67E8A27975B830017487F /* PodDetailsView.swift */,
+				D85AEABB2B12D76F00081044 /* PodDiagnosticsView.swift */,
 				C1F67E8827975B830017487F /* PodSetupView.swift */,
+				D845A13E2AF89F8400EA0853 /* PumpManagerDetailsView.swift */,
+				D85AEAC32B13083F00081044 /* ReadPodInfoView.swift */,
+				D845A13C2AF89F8400EA0853 /* ReadPodStatusView.swift */,
 				C1F67E7427975B830017487F /* ScheduledExpirationReminderEditView.swift */,
 				C1F67E8727975B830017487F /* SetupCompleteView.swift */,
+				D845A1422AF89F9200EA0853 /* SilencePodSelectionView.swift */,
 				C1F67E7627975B830017487F /* TimeView.swift */,
 				C1F67E8427975B830017487F /* UncertaintyRecoveredView.swift */,
-				8475311F26ED838A009FD801 /* PodLifeHUDView.swift */,
-				8475312426ED838A009FD801 /* PodLifeHUDView.xib */,
-				C187C190278FCEC9006E3557 /* InsulinTypeConfirmation.swift */,
-				C1ED1E7127BAE44E00FED71C /* BeepPreferenceSelectionView.swift */,
-				C1DBD512282FF79D009FCF74 /* ManualTempBasalEntryView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -829,10 +830,10 @@
 		C1F67EBB27975F060017487F /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				C1F67EC227975F360017487F /* OmniBLESettingsViewModel.swift */,
 				C1F67EC027975F360017487F /* DeactivatePodViewModel.swift */,
 				C1F67EC127975F360017487F /* DeliveryUncertaintyRecoveryViewModel.swift */,
 				C1F67EBD27975F360017487F /* InsertCannulaViewModel.swift */,
+				C1F67EC227975F360017487F /* OmniBLESettingsViewModel.swift */,
 				C1F67EBE27975F360017487F /* PairPodViewModel.swift */,
 				C1F67EC327975F360017487F /* PodLifeState.swift */,
 			);
@@ -877,6 +878,7 @@
 			name = OmniBLE;
 			packageProductDependencies = (
 				8475306D26ED15DE009FD801 /* CryptoSwift */,
+				D8DA5CCD2B49EDE900C54E6C /* SlideButton */,
 			);
 			productName = OmniBLE;
 			productReference = 84752E8226ED0FFE009FD801 /* OmniBLE.framework */;
@@ -967,16 +969,20 @@
 				he,
 				tr,
 				ar,
-				uk,
+				cs,
+				hi,
 				sk,
+				uk,
 				lt,
 				bn,
 				"pt-PT",
 				ca,
+				hu,
 			);
 			mainGroup = 84752E7826ED0FFE009FD801;
 			packageReferences = (
 				8475306C26ED15DE009FD801 /* XCRemoteSwiftPackageReference "CryptoSwift" */,
+				D8DA5CCC2B49EDE900C54E6C /* XCRemoteSwiftPackageReference "SlideButton" */,
 			);
 			productRefGroup = 84752E8326ED0FFE009FD801 /* Products */;
 			projectDirPath = "";
@@ -995,9 +1001,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C1F67E9527975B830017487F /* HUDAssets.xcassets in Resources */,
-				193E48D529B4AEF3006927CB /* Localizable.strings in Resources */,
 				1029AE4F27094E1900B7F5B6 /* OmniBLEUI.xcassets in Resources */,
-				8475313726ED838B009FD801 /* PodLifeHUDView.xib in Resources */,
+				191DB66D2A06F17800212AC9 /* Localizable.strings in Resources */,
 				A91B2DEC276E1E5E001B0E95 /* README.md in Resources */,
 				C1C001C427A2351D00533D35 /* OmniBLEReservoirView.xib in Resources */,
 			);
@@ -1050,7 +1055,9 @@
 				1029AE4927094D0E00B7F5B6 /* OmniBLEPumpManagerState.swift in Sources */,
 				10289E7D2739F893000339E6 /* Milenage.swift in Sources */,
 				10389A3A26FF7841002115E9 /* SetInsulinScheduleCommand.swift in Sources */,
+				D845A13B2AF89F7100EA0853 /* PlayTestBeepsView.swift in Sources */,
 				10389A3826FF7841002115E9 /* DetailedStatus.swift in Sources */,
+				D85AEABC2B12D76F00081044 /* PodDiagnosticsView.swift in Sources */,
 				C1F67E9927975B830017487F /* NotificationSettingsView.swift in Sources */,
 				10389A2B26FF7841002115E9 /* PlaceholderMessageBlock.swift in Sources */,
 				10389A3026FF7841002115E9 /* StatusResponse.swift in Sources */,
@@ -1065,14 +1072,14 @@
 				C1F67EDA27979E400017487F /* PumpManagerAlert.swift in Sources */,
 				10389A2D26FF7841002115E9 /* BolusExtraCommand.swift in Sources */,
 				8475315926EDA193009FD801 /* UIColor.swift in Sources */,
-				10389A2926FF7841002115E9 /* PodInfoConfiguredAlerts.swift in Sources */,
+				10389A2926FF7841002115E9 /* PodInfoTriggeredAlerts.swift in Sources */,
 				C1F67EB727975E710017487F /* LeadingImage.swift in Sources */,
 				C1F67ECB27975F360017487F /* PodLifeState.swift in Sources */,
 				8475315B26EDA193009FD801 /* NibLoadable.swift in Sources */,
 				10389A3126FF7841002115E9 /* GetStatusCommand.swift in Sources */,
-				8475313226ED838B009FD801 /* PodLifeHUDView.swift in Sources */,
 				C1C001BF27A2337B00533D35 /* PeripheralManager+OmniBLE.swift in Sources */,
 				10389A3F26FF7841002115E9 /* CRC16.swift in Sources */,
+				D85AEAC42B13083F00081044 /* ReadPodInfoView.swift in Sources */,
 				10289E68271B2A08000339E6 /* NumberFormatter.swift in Sources */,
 				1016325927185EE4007A3BC2 /* BeepType.swift in Sources */,
 				C1F67E9E27975B830017487F /* LowReservoirReminderEditView.swift in Sources */,
@@ -1094,6 +1101,7 @@
 				C1ED1E7227BAE44E00FED71C /* BeepPreferenceSelectionView.swift in Sources */,
 				84752EDE26ED13F5009FD801 /* PeripheralManagerError.swift in Sources */,
 				10389A2526FF7841002115E9 /* PodInfoActivationTime.swift in Sources */,
+				D845A1432AF89F9200EA0853 /* SilencePodSelectionView.swift in Sources */,
 				C1F67E9A27975B830017487F /* DeliveryUncertaintyRecoveryView.swift in Sources */,
 				1021114D2709467400784F13 /* PodComms.swift in Sources */,
 				10289E6E27309327000339E6 /* CBPeripheral.swift in Sources */,
@@ -1112,6 +1120,7 @@
 				1016325C27185EE5007A3BC2 /* BasalDeliveryTable.swift in Sources */,
 				84752EE326ED13F5009FD801 /* BLEPacket.swift in Sources */,
 				102111472709462300784F13 /* PodState.swift in Sources */,
+				196A6F232AFFFD1700E3C089 /* SilencePodPreference.swift in Sources */,
 				1021114B2709462300784F13 /* BasalSchedule+LoopKit.swift in Sources */,
 				84752EE626ED13F5009FD801 /* LTKExchanger.swift in Sources */,
 				10389A2A26FF7841002115E9 /* MessageBlock.swift in Sources */,
@@ -1127,6 +1136,7 @@
 				C1F67EA027975B830017487F /* PodSetupView.swift in Sources */,
 				C1ED1E7027BAE1A600FED71C /* BeepPreference.swift in Sources */,
 				10389A3B26FF7841002115E9 /* ConfigureAlertsCommand.swift in Sources */,
+				D845A13F2AF89F8400EA0853 /* ReadPodStatusView.swift in Sources */,
 				D8896C6227890E6B00E09A96 /* DetailedStatus+OmniBLE.swift in Sources */,
 				10389A3926FF7841002115E9 /* PodInfoResponse.swift in Sources */,
 				84752EE226ED13F5009FD801 /* PayloadJoiner.swift in Sources */,
@@ -1136,6 +1146,7 @@
 				C1F67EC827975F360017487F /* DeactivatePodViewModel.swift in Sources */,
 				C1F67E9127975B830017487F /* DeactivatePodView.swift in Sources */,
 				84752EE726ED13F5009FD801 /* PairResult.swift in Sources */,
+				D845A1412AF89F8400EA0853 /* PumpManagerDetailsView.swift in Sources */,
 				8475315D26EDA193009FD801 /* Data.swift in Sources */,
 				C1F67E9427975B830017487F /* LowReservoirReminderSetupView.swift in Sources */,
 				C1F67EB627975E710017487F /* RoundedCard.swift in Sources */,
@@ -1153,6 +1164,7 @@
 				10389A2E26FF7841002115E9 /* FaultConfigCommand.swift in Sources */,
 				C1F67E9F27975B830017487F /* SetupCompleteView.swift in Sources */,
 				C1F67EE227985F580017487F /* ReservoirLevel.swift in Sources */,
+				D845A1372AF89F5500EA0853 /* ActivityView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1209,61 +1221,36 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		193E48BA29B4AEF3006927CB /* Localizable.strings */ = {
+		191DB6522A06F17800212AC9 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				193E48BB29B4AEF3006927CB /* de */,
-				193E48BC29B4AEF3006927CB /* he */,
-				193E48BD29B4AEF3006927CB /* ar */,
-				193E48BE29B4AEF3006927CB /* zh-Hans */,
-				193E48BF29B4AEF3006927CB /* ja */,
-				193E48C029B4AEF3006927CB /* en */,
-				193E48C129B4AEF3006927CB /* uk */,
-				193E48C229B4AEF3006927CB /* nb */,
-				193E48C329B4AEF3006927CB /* es */,
-				193E48C429B4AEF3006927CB /* da */,
-				193E48C529B4AEF3006927CB /* it */,
-				193E48C629B4AEF3006927CB /* sk */,
-				193E48C729B4AEF3006927CB /* sv */,
-				193E48C829B4AEF3006927CB /* tr */,
-				193E48C929B4AEF3006927CB /* pl */,
-				193E48CA29B4AEF3006927CB /* pt-BR */,
-				193E48CB29B4AEF3006927CB /* vi */,
-				193E48CC29B4AEF3006927CB /* lt */,
-				193E48CD29B4AEF3006927CB /* ru */,
-				193E48CE29B4AEF3006927CB /* fr */,
-				193E48CF29B4AEF3006927CB /* fi */,
-				193E48D029B4AEF3006927CB /* nl */,
-				193E48D129B4AEF3006927CB /* bn */,
-				193E48D229B4AEF3006927CB /* pt-PT */,
-				193E48D329B4AEF3006927CB /* ro */,
-				193E48D429B4AEF3006927CB /* ca */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		4B67E2D3289B4EDB002D92AF /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4B67E2D4289B4EDB002D92AF /* de */,
-				4B23AA6328D909E2009B453B /* en */,
-				4B23AA6428D909E7009B453B /* zh-Hans */,
-				4B23AA6528D909E9009B453B /* da */,
-				4B23AA6628D909EC009B453B /* nl */,
-				4B23AA6728D909EE009B453B /* fi */,
-				4B23AA6828D909F1009B453B /* fr */,
-				4B23AA6A28D909F5009B453B /* it */,
-				4B23AA6B28D909F7009B453B /* ja */,
-				4B23AA6C28D909FA009B453B /* nb */,
-				4B23AA6D28D909FD009B453B /* pl */,
-				4B23AA6E28D909FF009B453B /* pt-BR */,
-				4B23AA6F28D90A01009B453B /* ro */,
-				4B23AA7028D90A03009B453B /* ru */,
-				4B23AA7128D90A06009B453B /* es */,
-				4B23AA7228D90A08009B453B /* sv */,
-				4B23AA7428D90A0D009B453B /* vi */,
-				193E485A29B4187E006927CB /* he */,
-				193E485B29B41881006927CB /* tr */,
+				191DB6532A06F17800212AC9 /* de */,
+				191DB6542A06F17800212AC9 /* he */,
+				191DB6552A06F17800212AC9 /* ar */,
+				191DB6562A06F17800212AC9 /* zh-Hans */,
+				191DB6572A06F17800212AC9 /* ja */,
+				191DB6582A06F17800212AC9 /* en */,
+				191DB6592A06F17800212AC9 /* uk */,
+				191DB65A2A06F17800212AC9 /* nb */,
+				191DB65B2A06F17800212AC9 /* es */,
+				191DB65C2A06F17800212AC9 /* da */,
+				191DB65D2A06F17800212AC9 /* it */,
+				191DB65E2A06F17800212AC9 /* sk */,
+				191DB65F2A06F17800212AC9 /* sv */,
+				191DB6602A06F17800212AC9 /* tr */,
+				191DB6612A06F17800212AC9 /* pl */,
+				191DB6622A06F17800212AC9 /* pt-BR */,
+				191DB6632A06F17800212AC9 /* vi */,
+				191DB6642A06F17800212AC9 /* lt */,
+				191DB6652A06F17800212AC9 /* ru */,
+				191DB6662A06F17800212AC9 /* fr */,
+				191DB6672A06F17800212AC9 /* fi */,
+				191DB6682A06F17800212AC9 /* nl */,
+				191DB6692A06F17800212AC9 /* bn */,
+				191DB66A2A06F17800212AC9 /* pt-PT */,
+				191DB66B2A06F17800212AC9 /* ro */,
+				191DB66C2A06F17800212AC9 /* ca */,
+				193F1E492B44C21100525770 /* hu */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1325,6 +1312,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LOCALIZED_STRING_MACRO_NAMES = (
+					NSLocalizedString,
+					CFCopyLocalizedString,
+					LocalizedString,
+					FrameworkLocalText,
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1384,6 +1377,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LOCALIZED_STRING_MACRO_NAMES = (
+					NSLocalizedString,
+					CFCopyLocalizedString,
+					LocalizedString,
+					FrameworkLocalText,
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -1615,6 +1614,14 @@
 				minimumVersion = 1.4.1;
 			};
 		};
+		D8DA5CCC2B49EDE900C54E6C /* XCRemoteSwiftPackageReference "SlideButton" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/no-comment/SlideButton";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1622,6 +1629,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8475306C26ED15DE009FD801 /* XCRemoteSwiftPackageReference "CryptoSwift" */;
 			productName = CryptoSwift;
+		};
+		D8DA5CCD2B49EDE900C54E6C /* SlideButton */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D8DA5CCC2B49EDE900C54E6C /* XCRemoteSwiftPackageReference "SlideButton" */;
+			productName = SlideButton;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

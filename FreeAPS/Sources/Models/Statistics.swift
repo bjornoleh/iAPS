@@ -18,6 +18,9 @@ struct Statistics: JSON, Equatable {
     var Carbs_24h: Decimal
     var GlucoseStorage_Days: Decimal
     var Statistics: Stats
+    var id: String
+    var dob: Date
+    var sex: Int
 
     init(
         created_at: Date,
@@ -36,7 +39,10 @@ struct Statistics: JSON, Equatable {
         peakActivityTime: Decimal,
         Carbs_24h: Decimal,
         GlucoseStorage_Days: Decimal,
-        Statistics: Stats
+        Statistics: Stats,
+        id: String,
+        dob: Date,
+        sex: Int
     ) {
         self.created_at = created_at
         self.iPhone = iPhone
@@ -55,6 +61,9 @@ struct Statistics: JSON, Equatable {
         self.Carbs_24h = Carbs_24h
         self.GlucoseStorage_Days = GlucoseStorage_Days
         self.Statistics = Statistics
+        self.id = id
+        self.dob = dob
+        self.sex = sex
     }
 
     static func == (lhs: Statistics, rhs: Statistics) -> Bool {
@@ -85,6 +94,9 @@ extension Statistics {
         case Carbs_24h
         case GlucoseStorage_Days
         case Statistics
+        case id
+        case dob
+        case sex
     }
 }
 
@@ -115,10 +127,22 @@ struct Durations: JSON, Equatable {
     var total: Decimal
 }
 
+struct Units: JSON, Equatable {
+    var Glucose: String
+    var HbA1c: String
+}
+
+struct Threshold: JSON, Equatable {
+    var low: Decimal
+    var high: Decimal
+}
+
 struct TIRs: JSON, Equatable {
     var TIR: Durations
     var Hypos: Durations
     var Hypers: Durations
+    var Threshold: Threshold
+    var Euglycemic: Durations
 }
 
 struct Ins: JSON, Equatable {
@@ -126,6 +150,7 @@ struct Ins: JSON, Equatable {
     let bolus: Decimal?
     let temp_basal: Decimal?
     let scheduled_basal: Decimal?
+    let total_average: Decimal?
 }
 
 struct Variance: JSON, Equatable {
@@ -137,6 +162,7 @@ struct Stats: JSON, Equatable {
     var Distribution: TIRs
     var Glucose: Averages
     var HbA1c: Durations
+    var Units: Units
     var LoopCycles: LoopCycles
     var Insulin: Ins
     var Variance: Variance
@@ -171,6 +197,8 @@ extension TIRs {
         case TIR
         case Hypos
         case Hypers
+        case Threshold
+        case Euglycemic
     }
 }
 
@@ -180,6 +208,7 @@ extension Ins {
         case bolus
         case temp_basal
         case scheduled_basal
+        case total_average
     }
 }
 
@@ -195,6 +224,7 @@ extension Stats {
         case Distribution
         case Glucose
         case HbA1c
+        case Units
         case LoopCycles
         case Insulin
         case Variance

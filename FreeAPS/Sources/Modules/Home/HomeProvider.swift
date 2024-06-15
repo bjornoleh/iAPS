@@ -9,21 +9,45 @@ extension Home {
         @Injected() var pumpHistoryStorage: PumpHistoryStorage!
         @Injected() var tempTargetsStorage: TempTargetsStorage!
         @Injected() var carbsStorage: CarbsStorage!
+        @Injected() var announcementStorage: AnnouncementsStorage!
 
         var suggestion: Suggestion? {
             storage.retrieve(OpenAPS.Enact.suggested, as: Suggestion.self)
         }
 
-        var statistics: Statistics? {
-            let stat = storage.retrieve(OpenAPS.Monitor.statistics, as: [Statistics].self)
-            if stat?.count ?? 0 != 0 {
-                return stat![0]
-            }
-            return nil
+        let overrideStorage = OverrideStorage()
+
+        func overrides() -> [Override] {
+            overrideStorage.fetchOverrides(interval: DateFilter().day)
+        }
+
+        func overrideHistory() -> [OverrideHistory] {
+            overrideStorage.fetchOverrideHistory(interval: DateFilter().day)
         }
 
         var enactedSuggestion: Suggestion? {
             storage.retrieve(OpenAPS.Enact.enacted, as: Suggestion.self)
+        }
+
+        func reasons() -> [IOBData]? {
+            let reasons = CoreDataStorage().fetchReasons(interval: DateFilter().day)
+
+            guard reasons.count > 3 else {
+                return nil
+            }
+
+            return reasons.compactMap {
+                entry -> IOBData in
+                IOBData(
+                    date: entry.date ?? Date(),
+                    iob: (entry.iob ?? 0) as Decimal,
+                    cob: (entry.cob ?? 0) as Decimal
+                )
+            }
+        }
+
+        func pumpTimeZone() -> TimeZone? {
+            apsManager.pumpManager?.status.timeZone
         }
 
         func heartbeatNow() {
@@ -33,6 +57,13 @@ extension Home {
         func filteredGlucose(hours: Int) -> [BloodGlucose] {
             glucoseStorage.recent().filter {
                 $0.dateString.addingTimeInterval(hours.hours.timeInterval) > Date()
+            }
+        }
+
+        func manualGlucose(hours: Int) -> [BloodGlucose] {
+            glucoseStorage.recent().filter {
+                $0.type == GlucoseType.manual.rawValue &&
+                    $0.dateString.addingTimeInterval(hours.hours.timeInterval) > Date()
             }
         }
 
@@ -54,6 +85,12 @@ extension Home {
 
         func carbs(hours: Int) -> [CarbsEntry] {
             carbsStorage.recent().filter {
+                $0.createdAt.addingTimeInterval(hours.hours.timeInterval) > Date()
+            }
+        }
+
+        func announcement(_ hours: Int) -> [Announcement] {
+            announcementStorage.validate().filter {
                 $0.createdAt.addingTimeInterval(hours.hours.timeInterval) > Date()
             }
         }

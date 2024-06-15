@@ -13,10 +13,18 @@ struct NigtscoutTreatment: JSON, Hashable, Equatable {
     var insulin: Decimal?
     var notes: String?
     var carbs: Decimal?
+    var fat: Decimal?
+    var protein: Decimal?
+    var foodType: String?
     let targetTop: Decimal?
     let targetBottom: Decimal?
+    var glucoseType: String?
+    var glucose: String?
+    var units: String?
+    var id: String?
+    var fpuID: String?
 
-    static let local = "freeaps-x"
+    static let local = "iAPS"
 
     static let empty = NigtscoutTreatment(from: "{}")!
 
@@ -43,7 +51,15 @@ extension NigtscoutTreatment {
         case insulin
         case notes
         case carbs
+        case fat
+        case protein
+        case foodType
         case targetTop
         case targetBottom
+        case glucoseType
+        case glucose
+        case units
+        case id
+        case fpuID
     }
 }

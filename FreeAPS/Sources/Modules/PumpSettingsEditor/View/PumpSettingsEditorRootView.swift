@@ -23,6 +23,10 @@ extension PumpSettingsEditor {
                         Text("Max Bolus")
                         DecimalTextField("U", value: $state.maxBolus, formatter: formatter)
                     }
+                    HStack {
+                        Text("Max Carbs")
+                        DecimalTextField("g", value: $state.maxCarbs, formatter: formatter)
+                    }
                 }
 
                 Section(header: Text("Duration of Insulin Action")) {
@@ -45,9 +49,10 @@ extension PumpSettingsEditor {
                     }
                 }
             }
+            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
             .onAppear(perform: configureView)
             .navigationTitle("Pump Settings")
-            .navigationBarTitleDisplayMode(.automatic)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
