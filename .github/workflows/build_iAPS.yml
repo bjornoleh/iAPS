@@ -18,15 +18,15 @@ jobs:
 
   build:
     needs: secrets
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
-      # Uncomment to manually select Xcode version if needed
-      - name: Select Xcode version
-        run: "sudo xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer"
+      ## Uncomment to manually select Xcode version if needed
+      #- name: Select Xcode version
+      #  run: "sudo xcode-select --switch /Applications/Xcode_14.3.app/Contents/Developer"
 
       # Checks-out the repo
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       
@@ -59,9 +59,8 @@ jobs:
       # Upload Build artifacts
       - name: Upload build log, IPA and Symbol artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: |
-            artifacts
             buildlog
